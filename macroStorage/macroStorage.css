@@ -1,0 +1,291 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  padding: 16px;
+}
+
+/* 툴바 */
+.ms-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ms-search {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.ms-search:focus {
+  border-color: var(--color-primary);
+}
+
+.ms-btn-add {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--color-primary);
+  color: var(--color-primary-text);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.ms-btn-add:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* 태그 필터 */
+.ms-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.ms-tags.hidden {
+  display: none;
+}
+
+.ms-tag-btn {
+  font-size: 12px;
+  padding: 4px 10px;
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  background: #fff;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.ms-tag-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.ms-tag-btn.active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-primary-text);
+}
+
+/* 목록 */
+.ms-list {
+  list-style: none;
+}
+
+.ms-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  background-color: #fff;
+}
+
+.ms-item:hover {
+  background-color: #f5f7fa;
+}
+
+.ms-item.dragging {
+  opacity: 0.4;
+}
+
+.ms-item.drag-over {
+  border-top: 2px solid var(--color-primary);
+}
+
+/* 핸들 */
+.ms-item__handle {
+  cursor: grab;
+  color: #bbb;
+  margin-right: 8px;
+  font-size: 14px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.ms-item__handle:active {
+  cursor: grabbing;
+}
+
+/* 체크박스 */
+.ms-item__check {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.ms-item__check input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.ms-item__checkmark {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ccc;
+  border-radius: 3px;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.ms-item__check input:checked+.ms-item__checkmark {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.ms-item__check input:checked+.ms-item__checkmark::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 5px;
+  height: 9px;
+  border: solid var(--color-primary-text);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.ms-item__check:hover .ms-item__checkmark {
+  border-color: var(--color-primary);
+}
+
+/* 북마크 */
+.ms-item__bookmark {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #ccc;
+  flex-shrink: 0;
+  margin-right: 8px;
+}
+
+.ms-item__bookmark.active {
+  color: #f5a623;
+}
+
+/* 정보 영역 */
+.ms-item__info {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+.ms-item__title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ms-item__title {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* 태그 칩 */
+.ms-item__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 3px;
+}
+
+.ms-item__tag {
+  display: inline-block;
+  font-size: 11px;
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+/* 뱃지 (lookAuth, tokenOpt) */
+.ms-item__badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+}
+
+.badge--auth,
+.badge--token {
+  background-color: #f0f0f0;
+  color: #999;
+}
+
+/* 복사 버튼 */
+.ms-item__copy {
+  border: none;
+  background: none;
+  color: #bbb;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: 8px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.ms-item__copy:hover {
+  color: #555;
+}
+
+.ms-item__copy.copied {
+  color: #34a853;
+}
+
+/* 빈 상태 */
+.ms-empty {
+  text-align: center;
+  color: #999;
+  padding: 40px 16px;
+  font-size: 13px;
+  display: none;
+}
+
+.ms-empty.visible {
+  display: block;
+}

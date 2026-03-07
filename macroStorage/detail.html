@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MacroStorage Detail</title>
+  <link rel="stylesheet" href="detail.css">
+</head>
+
+<body>
+  <div class="ms-detail">
+    <!-- 헤더 -->
+    <div class="ms-detail__header">
+      <button class="ms-detail__back" id="btnBack" title="뒤로">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+      <span class="ms-detail__header-title" id="headerTitle">매크로 추가</span>
+      <button class="ms-detail__delete" id="btnDelete" style="display:none;" title="삭제">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6" />
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+          <path d="M10 11v6" />
+          <path d="M14 11v6" />
+          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- 폼 -->
+    <div class="ms-detail__body">
+      <label class="ms-detail__label">제목</label>
+      <input type="text" class="ms-detail__input" id="inputTitle" placeholder="매크로 이름">
+
+      <label class="ms-detail__label">태그</label>
+      <div class="tag-input-wrap" id="tagInputWrap">
+        <div class="tag-chips" id="tagChips"></div>
+        <input type="text" class="tag-input" id="tagInput" placeholder="태그 입력 후 , 또는 Enter">
+      </div>
+
+      <label class="ms-detail__label">내용</label>
+      <textarea class="ms-detail__textarea" id="inputContent" rows="10" placeholder="매크로 내용"></textarea>
+
+      <label class="ms-detail__label">메모</label>
+      <textarea class="ms-detail__textarea ms-detail__textarea--memo" id="inputMemo" rows="3"
+        placeholder="메모"></textarea>
+
+      <!-- 옵션 토글 -->
+      <div class="ms-detail__options">
+        <label class="ms-detail__option">
+          <span class="ms-detail__option-label">All Player 보기권한</span>
+          <label class="toggle">
+            <input type="checkbox" id="inputLookAuth">
+            <span class="toggle__slider"></span>
+          </label>
+        </label>
+        <label class="ms-detail__option">
+          <span class="ms-detail__option-label">토큰옵션</span>
+          <label class="toggle">
+            <input type="checkbox" id="inputTokenOpt">
+            <span class="toggle__slider"></span>
+          </label>
+        </label>
+      </div>
+    </div>
+
+    <!-- 푸터 -->
+    <div class="ms-detail__footer">
+      <button class="ms-detail__save" id="btnSave">저장</button>
+    </div>
+  </div>
+
+  <script src="../theme.js"></script>
+  <script src="macroStorage.js"></script>
+  <script src="detailUI.js"></script>
+</body>
+
+</html>
+<script>
+  window.addEventListener(`dragover`, (evt = event) => {
+    evt.preventDefault();
+    evt.dataTransfer.effectAllowed = `none`;
+    evt.dataTransfer.dropEffect = `none`;
+  }, false);
+
+  window.addEventListener(`drop`, (evt = event) => {
+    evt.preventDefault();
+    evt.dataTransfer.effectAllowed = `none`;
+    evt.dataTransfer.dropEffect = `none`;
+  }, false)
+</script>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TypeSaver</title>
+  <link rel="stylesheet" href="sidebar.css">
+</head>
+
+<body>
+  <div id="app">
+
+    <main class="content">
+      <section class="page active" id="page1">
+        <iframe src="typeSaver/index.html" class="page-frame" id="typeSaverFrame"></iframe>
+      </section>
+      <section class="page" id="page2">
+        <iframe src="macroStorage/index.html" class="page-frame" id="macroStorageFrame"></iframe>
+      </section>
+      <section class="page" id="page3">
+        <iframe src="calendar/index.html" class="page-frame" id="calendarFrame"></iframe>
+      </section>
+      <section class="page" id="page4">
+        <iframe src="bookmark/index.html" class="page-frame" id="bookmarkFrame"></iframe>
+      </section>
+    </main>
+    <header class="header">
+      <nav class="header__nav">
+        <button class="nav-tab active" data-page="page1" title="클립보드">
+          <img src="assets/chat-bubble-list.svg" width="18" height="18">
+        </button>
+        <button class="nav-tab" data-page="page2" title="매크로 저장소">
+          <img src="assets/hashtag.svg" width="18" height="18">
+        </button>
+        <button class="nav-tab" data-page="page3" title="일정">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+        </button>
+        <button class="nav-tab" data-page="page4" title="북마크">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+          </svg>
+        </button>
+        <button class="nav-tab nav-tab--settings" id="btnSettings" title="탭 설정">
+          <img src="assets/settings.svg" width="18" height="18">
+        </button>
+      </nav>
+      <!-- 탭 가시성 설정 메뉴 -->
+      <div class="tab-settings" id="tabSettings" style="display:none;">
+        <div class="tab-settings__item" data-page="page1" data-visible="true" draggable="true">
+          <span class="tab-settings__handle">☰</span>
+          <span class="tab-settings__name">클립보드</span>
+          <svg class="eye-icon eye-open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          <svg class="eye-icon eye-closed" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+            <line x1="1" y1="1" x2="23" y2="23" />
+          </svg>
+        </div>
+        <div class="tab-settings__item" data-page="page2" data-visible="true" draggable="true">
+          <span class="tab-settings__handle">☰</span>
+          <span class="tab-settings__name">매크로 저장소</span>
+          <svg class="eye-icon eye-open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          <svg class="eye-icon eye-closed" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+            <line x1="1" y1="1" x2="23" y2="23" />
+          </svg>
+        </div>
+        <div class="tab-settings__item" data-page="page3" data-visible="true" draggable="true">
+          <span class="tab-settings__handle">☰</span>
+          <span class="tab-settings__name">일정</span>
+          <svg class="eye-icon eye-open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          <svg class="eye-icon eye-closed" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+            <line x1="1" y1="1" x2="23" y2="23" />
+          </svg>
+        </div>
+        <div class="tab-settings__item" data-page="page4" data-visible="true" draggable="true">
+          <span class="tab-settings__handle">☰</span>
+          <span class="tab-settings__name">북마크</span>
+          <svg class="eye-icon eye-open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          <svg class="eye-icon eye-closed" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+            <line x1="1" y1="1" x2="23" y2="23" />
+          </svg>
+        </div>
+        <!-- 테마 설정 -->
+        <div class="theme-settings__divider"></div>
+        <div class="theme-settings">
+          <button class="theme-settings__btn" id="btnThemeModal">🎨 테마 설정</button>
+        </div>
+      </div>
+    </header>
+  </div>
+  <!-- 테마 설정 모달 -->
+  <div class="theme-modal-overlay" id="themeModalOverlay" style="display:none;">
+    <div class="theme-modal" id="themeModal">
+      <div class="theme-modal__header">
+        <span class="theme-modal__title">테마 설정</span>
+        <button class="theme-modal__close" id="themeModalClose">×</button>
+      </div>
+      <div class="theme-modal__body">
+        <div class="theme-modal__row">
+          <label class="theme-modal__label">글씨색</label>
+          <input type="color" id="themeText" class="theme-modal__color">
+        </div>
+        <div class="theme-modal__row">
+          <label class="theme-modal__label">배경색</label>
+          <input type="color" id="themeBg" class="theme-modal__color">
+        </div>
+        <div class="theme-modal__row">
+          <label class="theme-modal__label">포인트색</label>
+          <input type="color" id="themePrimary" class="theme-modal__color">
+        </div>
+        <div class="theme-modal__row">
+          <label class="theme-modal__label">포인트 글씨색</label>
+          <input type="color" id="themePrimaryText" class="theme-modal__color">
+        </div>
+      </div>
+      <div class="theme-modal__footer">
+        <button class="theme-modal__reset" id="themeReset">초기화</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="theme.js"></script>
+  <script src="sidebar.js"></script>
+</body>
+
+</html>
+<script>
+  window.addEventListener(`dragover`, (evt = event) => {
+    evt.preventDefault();
+    evt.dataTransfer.effectAllowed = `none`;
+    evt.dataTransfer.dropEffect = `none`;
+  }, false);
+
+  window.addEventListener(`drop`, (evt = event) => {
+    evt.preventDefault();
+    evt.dataTransfer.effectAllowed = `none`;
+    evt.dataTransfer.dropEffect = `none`;
+  }, false)
+</script>

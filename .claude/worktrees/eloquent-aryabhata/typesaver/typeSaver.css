@@ -1,0 +1,208 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  color: #333;
+  background-color: #fff;
+  padding: 16px;
+}
+
+/* TypeSaver */
+.ts-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ts-search {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.ts-search:focus {
+  border-color: #1a73e8;
+}
+
+.ts-btn-add {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 6px;
+  background-color: #1a73e8;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.ts-btn-add:hover {
+  background-color: #1557b0;
+}
+
+/* Tag Filter */
+.ts-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.ts-tags.hidden {
+  display: none;
+}
+
+.ts-tag-btn {
+  font-size: 12px;
+  padding: 4px 10px;
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  background: #fff;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.ts-tag-btn:hover {
+  border-color: #1a73e8;
+  color: #1a73e8;
+}
+
+.ts-tag-btn.active {
+  background-color: #1a73e8;
+  border-color: #1a73e8;
+  color: #fff;
+}
+
+.ts-list {
+  list-style: none;
+}
+
+.ts-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  background-color: #fff;
+}
+
+.ts-item:hover {
+  background-color: #f5f7fa;
+}
+
+.ts-item.dragging {
+  opacity: 0.4;
+}
+
+.ts-item.drag-over {
+  border-top: 2px solid #1a73e8;
+}
+
+.ts-item__handle {
+  cursor: grab;
+  color: #bbb;
+  margin-right: 8px;
+  font-size: 14px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.ts-item__handle:active {
+  cursor: grabbing;
+}
+
+.ts-item__bookmark {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #ccc;
+  flex-shrink: 0;
+  margin-right: 8px;
+}
+
+.ts-item__bookmark.active {
+  color: #f5a623;
+}
+
+.ts-item__info {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+.ts-item__title {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ts-item__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 3px;
+}
+
+.ts-item__tag {
+  display: inline-block;
+  font-size: 11px;
+  color: #1a73e8;
+  background-color: #e8f0fe;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.ts-item__copy {
+  border: none;
+  background: none;
+  color: #bbb;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: 8px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.ts-item__copy:hover {
+  color: #555;
+}
+
+.ts-item__copy.copied {
+  color: #34a853;
+}
+
+.ts-empty {
+  text-align: center;
+  color: #999;
+  padding: 40px 16px;
+  font-size: 13px;
+  display: none;
+}
+
+.ts-empty.visible {
+  display: block;
+}

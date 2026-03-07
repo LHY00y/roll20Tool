@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookmark</title>
+  <link rel="stylesheet" href="bookmark.css">
+</head>
+
+<body>
+  <div class="bm-toolbar">
+    <input type="text" class="bm-search" placeholder="검색...">
+    <button class="bm-btn-memo-toggle" id="bmMemoToggle" title="메모 표시/숨기기">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+      </svg>
+    </button>
+    <button class="bm-btn-add" title="추가">+</button>
+  </div>
+  <div class="bm-tags" id="bmTagFilter"></div>
+  <ul class="bm-list" id="bmList"></ul>
+  <div class="bm-empty" id="bmEmpty">저장된 북마크가 없습니다.</div>
+
+  <script src="../theme.js"></script>
+  <script src="bookmarkData.js"></script>
+  <script src="bookmarkUI.js"></script>
+</body>
+
+</html>
+<script>
+  window.addEventListener(`dragover`, (evt = event) => {
+    evt.preventDefault();
+    evt.dataTransfer.effectAllowed = `none`;
+    evt.dataTransfer.dropEffect = `none`;
+  }, false);
+
+  window.addEventListener(`drop`, (evt = event) => {
+    evt.preventDefault();
+    evt.dataTransfer.effectAllowed = `none`;
+    evt.dataTransfer.dropEffect = `none`;
+  }, false)
+</script>

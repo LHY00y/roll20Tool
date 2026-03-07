@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TypeSaver</title>
+  <link rel="stylesheet" href="sidebar.css">
+</head>
+
+<body>
+  <div id="app">
+    <header class="header">
+      <h1 class="header__title">TypeSaver</h1>
+      <nav class="header__nav">
+        <button class="nav-tab active" data-page="page1">페이지 1</button>
+        <button class="nav-tab" data-page="page2">페이지 2</button>
+        <button class="nav-tab" data-page="page3">페이지 3</button>
+      </nav>
+    </header>
+    <main class="content">
+      <section class="page active" id="page1">
+        <iframe src="typeSaver/index.html" class="page-frame" id="typeSaverFrame"></iframe>
+      </section>
+      <section class="page" id="page2">
+        <iframe src="macroStorage/index.html" class="page-frame" id="macroStorageFrame"></iframe>
+      </section>
+      <section class="page" id="page3">
+        <iframe src="calendar/index.html" class="page-frame" id="calendarFrame"></iframe>
+      </section>
+    </main>
+  </div>
+  <script src="sidebar.js"></script>
+</body>
+
+</html>
+<script>
+  window.addEventListener(`dragover`, (evt = event) => {
+    evt.preventDefault();
+    evt.dataTransfer.effectAllowed = `none`;
+    evt.dataTransfer.dropEffect = `none`;
+  }, false);
+
+  window.addEventListener(`drop`, (evt = event) => {
+    evt.preventDefault();
+    evt.dataTransfer.effectAllowed = `none`;
+    evt.dataTransfer.dropEffect = `none`;
+  }, false)
+</script>

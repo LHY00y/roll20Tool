@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TypeSaver</title>
+  <link rel="stylesheet" href="typeSaver.css">
+</head>
+
+<body>
+  <div class="ts-toolbar">
+    <input type="text" class="ts-search" placeholder="검색...">
+    <button class="ts-btn-add" title="추가">+</button>
+  </div>
+  <div class="ts-tags" id="tsTagFilter"></div>
+  <ul class="ts-list" id="tsList"></ul>
+  <div class="ts-empty" id="tsEmpty">저장된 상용구가 없습니다.</div>
+
+  <script src="../theme.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="typeSaver.js"></script>
+  <script src="typeSaverUI.js"></script>
+</body>
+
+</html>
+<script>
+  window.addEventListener(`dragover`, (evt = event) => {
+    evt.preventDefault();
+    evt.dataTransfer.effectAllowed = `none`;
+    evt.dataTransfer.dropEffect = `none`;
+  }, false);
+
+  window.addEventListener(`drop`, (evt = event) => {
+    evt.preventDefault();
+    evt.dataTransfer.effectAllowed = `none`;
+    evt.dataTransfer.dropEffect = `none`;
+  }, false)
+</script>

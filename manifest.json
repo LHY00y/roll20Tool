@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "클립보드",
+  "version": "1.0.0",
+  "description": "Roll20 특화 클립보드",
+  "sidebar_action": {
+    "default_page": "sidebar.html",
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    },
+    "default_title": "클립보드",
+    "use_navigation_bar": false
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  }
+}

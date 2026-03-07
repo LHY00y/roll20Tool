@@ -1,0 +1,772 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  padding: 16px;
+}
+
+/* ════════════ 달력 헤더 ════════════ */
+.cal__header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.cal__title {
+  flex: 1;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.cal__btn {
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #333;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.cal__btn:hover {
+  background-color: #f5f7fa;
+  border-color: #bbb;
+}
+
+.cal__btn--today {
+  width: auto;
+  padding: 0 10px;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+.cal__btn--subs {
+  margin-left: 2px;
+}
+
+/* ════════════ 구독 관리 패널 ════════════ */
+.subs-panel {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  background-color: #fafafa;
+}
+
+.subs-panel__header {
+  margin-bottom: 10px;
+}
+
+.subs-panel__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+}
+
+.subs-list {
+  list-style: none;
+  margin-bottom: 10px;
+}
+
+.subs-empty {
+  font-size: 12px;
+  color: #aaa;
+  text-align: center;
+  padding: 8px 0;
+}
+
+.subs-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  border-radius: 4px;
+  transition: background-color 0.15s;
+}
+
+.subs-item:hover {
+  background-color: #f0f0f0;
+}
+
+.subs-item__color {
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  flex-shrink: 0;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  overflow: hidden;
+}
+
+.subs-item__color::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border-radius: 50%;
+}
+
+.subs-item__color::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.subs-item__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.subs-item__name {
+  font-size: 13px;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.subs-item__url {
+  font-size: 10px;
+  color: #aaa;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.subs-item__btn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  color: #999;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.subs-item__btn:hover {
+  background-color: #e0e0e0;
+  color: #555;
+}
+
+.subs-item__btn--delete {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.subs-item__btn--delete:hover {
+  color: #d93025;
+  background-color: #fce8e6;
+}
+
+.subs-add {
+  display: flex;
+  gap: 6px;
+}
+
+.subs-add__input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.subs-add__input:focus {
+  border-color: var(--color-primary);
+}
+
+.subs-add__btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--color-primary);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s;
+}
+
+.subs-add__btn:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.subs-add__btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.subs-status {
+  font-size: 11px;
+  color: #888;
+  margin-top: 6px;
+  min-height: 16px;
+}
+
+.subs-status--success {
+  color: #34a853;
+}
+
+.subs-status--error {
+  color: #d93025;
+}
+
+
+/* ════════════ 달력 테이블 ════════════ */
+.cal__table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.cal__table th {
+  font-size: 12px;
+  font-weight: 500;
+  color: #888;
+  padding: 6px 0;
+  text-align: center;
+}
+
+.cal__table th.sun {
+  color: #d93025;
+}
+
+.cal__table th.sat {
+  color: var(--color-primary);
+}
+
+.cal__table td {
+  text-align: center;
+  padding: 2px;
+  vertical-align: top;
+  cursor: pointer;
+  position: relative;
+}
+
+.cal__table td:hover {
+  background-color: color-mix(in srgb, var(--color-primary) 60%, transparent);
+  border-radius: 4px;
+}
+
+.cal__day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: 0 auto;
+  border-radius: 50%;
+  font-size: 13px;
+  transition: all 0.15s;
+}
+
+.cal__day--other {
+  color: #ccc;
+}
+
+.cal__day--today {
+  background-color: var(--color-primary);
+  color: #fff;
+  font-weight: 700;
+}
+
+.cal__day--today:hover {
+  background-color: var(--color-primary);
+}
+
+.cal__day--selected:not(.cal__day--today) {
+  background-color: color-mix(in srgb, var(--color-primary) 60%, transparent);
+  font-weight: 600;
+}
+
+.cal__day--sun {
+  color: #d93025;
+}
+
+.cal__day--sat {
+  color: var(--color-primary);
+}
+
+.cal__day--other.cal__day--sun,
+.cal__day--other.cal__day--sat {
+  color: #ccc;
+}
+
+/* 일정 표시 점 (여러 개 나란히) */
+.cal__dots {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  margin-top: 1px;
+  min-height: 6px;
+}
+
+.cal__dot {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+
+/* ════════════ 알림 설정 토글 ════════════ */
+.cal-settings {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid #eee;
+  margin-top: 12px;
+}
+
+.cal-settings__row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.cal-settings__label {
+  font-size: 11px;
+  color: #666;
+  white-space: nowrap;
+}
+
+/* 토글 스위치 */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle__slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  border-radius: 18px;
+  transition: all 0.2s;
+}
+
+.toggle__slider::before {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  left: 2px;
+  bottom: 2px;
+  background-color: #fff;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.toggle input:checked+.toggle__slider {
+  background-color: var(--color-primary);
+}
+
+.toggle input:checked+.toggle__slider::before {
+  transform: translateX(16px);
+}
+
+
+/* ════════════ 알림 팝업 ════════════ */
+.notify-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: #fff;
+  border-bottom: 2px solid var(--color-primary);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  animation: notifySlideIn 0.3s ease-out;
+}
+
+@keyframes notifySlideIn {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.notify-popup__icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.notify-popup__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.notify-popup__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notify-popup__time {
+  font-size: 11px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.notify-popup__close {
+  padding: 4px 12px;
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #333;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.notify-popup__close:hover {
+  background-color: #f5f7fa;
+  border-color: #bbb;
+}
+
+
+/* ════════════ 일정 패널 ════════════ */
+.evt-panel {
+  margin-top: 16px;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 12px;
+}
+
+.evt-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.evt-panel__date {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.evt-panel__add {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #ddd;
+  background: #fff;
+  color: var(--color-primary);
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.evt-panel__add:hover {
+  background-color: #e8f0fe;
+  border-color: var(--color-primary);
+}
+
+/* 일정 목록 */
+.evt-list {
+  list-style: none;
+}
+
+.evt-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.evt-item:hover {
+  background-color: #f5f7fa;
+}
+
+.evt-item__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.evt-item__time {
+  font-size: 12px;
+  color: #888;
+  min-width: 36px;
+  flex-shrink: 0;
+}
+
+.evt-item__name {
+  font-size: 13px;
+  color: #333;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.evt-item__url-icon,
+.evt-item__memo-icon {
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.evt-empty {
+  font-size: 13px;
+  color: #aaa;
+  text-align: center;
+  padding: 16px 0;
+}
+
+
+/* ════════════ 폼 오버레이 (공통) ════════════ */
+.evt-form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.evt-form {
+  background: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 340px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.evt-form__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.evt-form__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
+.evt-form__close {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  font-size: 20px;
+  color: #999;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.evt-form__close:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.evt-form__body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.evt-form__label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #666;
+  margin-top: 4px;
+}
+
+.evt-form__input,
+.evt-form__textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #333;
+  font-family: inherit;
+  transition: border-color 0.15s;
+  outline: none;
+}
+
+.evt-form__input:focus,
+.evt-form__textarea:focus {
+  border-color: var(--color-primary);
+}
+
+.evt-form__textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.evt-form__hint {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: -2px;
+}
+
+.evt-form__notify-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.evt-form__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #eee;
+}
+
+.evt-form__btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.evt-form__btn--save {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+.evt-form__btn--save:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.evt-form__btn--delete {
+  background-color: #fff;
+  color: #d93025;
+  border: 1px solid #d93025;
+  margin-right: auto;
+}
+
+.evt-form__btn--delete:hover {
+  background-color: #fce8e6;
+}
+
+
+/* ════════════ iCal 상세 정보 ════════════ */
+.ical-detail__info {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+}
+
+.ical-detail__row {
+  display: flex;
+  gap: 8px;
+  padding: 3px 0;
+  font-size: 12px;
+  color: #555;
+  line-height: 1.5;
+}
+
+.ical-detail__label {
+  color: #888;
+  min-width: 40px;
+  flex-shrink: 0;
+  font-weight: 500;
+}
+
+.ical-detail__cal {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ical-detail__cal-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}

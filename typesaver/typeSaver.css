@@ -1,0 +1,345 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  padding: 16px;
+}
+
+/* TypeSaver */
+.ts-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ts-search {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.ts-search:focus {
+  border-color: var(--color-primary);
+}
+
+.ts-btn-add {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--color-primary);
+  color: var(--color-primary-text);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.ts-btn-add:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* Tag Filter */
+.ts-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.ts-tags.hidden {
+  display: none;
+}
+
+.ts-tag-btn {
+  font-size: 12px;
+  padding: 4px 10px;
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  background: #fff;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.ts-tag-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.ts-tag-btn.active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-primary-text);
+}
+
+.ts-list {
+  list-style: none;
+}
+
+.ts-item {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #eee;
+  background-color: #fff;
+  transition: background-color 0.15s;
+}
+
+.ts-item:hover {
+  background-color: #f5f7fa;
+}
+
+.ts-item__row {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.ts-item.dragging {
+  opacity: 0.4;
+}
+
+.ts-item.drag-over {
+  border-top: 2px solid var(--color-primary);
+}
+
+.ts-item__handle {
+  cursor: grab;
+  color: #bbb;
+  margin-right: 8px;
+  font-size: 14px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.ts-item__handle:active {
+  cursor: grabbing;
+}
+
+.ts-item__bookmark {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #ccc;
+  flex-shrink: 0;
+  margin-right: 8px;
+}
+
+.ts-item__bookmark.active {
+  color: #f5a623;
+}
+
+.ts-item__info {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+.ts-item__title {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ts-item__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 3px;
+}
+
+.ts-item__tag {
+  display: inline-block;
+  font-size: 11px;
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.ts-item__edit,
+.ts-item__copy {
+  border: none;
+  background: none;
+  color: #bbb;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: 8px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.ts-item__edit:hover {
+  color: var(--color-primary);
+}
+
+.ts-item__copy:hover {
+  color: #555;
+}
+
+.ts-item__copy.copied {
+  color: #34a853;
+}
+
+/* ── 파라미터 패널 ── */
+.ts-item__params {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px 12px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #eee;
+}
+
+.ts-item__params.open {
+  display: flex;
+}
+
+.ts-params__empty {
+  font-size: 12px;
+  color: #999;
+}
+
+.ts-params__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ts-params__label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #555;
+  min-width: 60px;
+  flex-shrink: 0;
+}
+
+.ts-params__input {
+  flex: 1;
+  padding: 5px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.ts-params__input:focus {
+  border-color: var(--color-primary);
+}
+
+/* 미리보기 행: 원본 → 결과 [복사] */
+.ts-params__preview-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin-top: 4px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.ts-preview__original,
+.ts-preview__result {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  line-height: 1.7;
+  color: #333;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.ts-preview__original {
+  background-color: #f8f9fa;
+  border-right: 1px solid #e0e0e0;
+}
+
+.ts-preview__arrow {
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  color: #999;
+  font-size: 14px;
+  flex-shrink: 0;
+  background-color: #f0f0f0;
+}
+
+.ts-preview__placeholder {
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 10px;
+}
+
+.ts-preview__filled {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.ts-params__copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  border: none;
+  background-color: var(--color-primary);
+  color: var(--color-primary-text);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.15s;
+}
+
+.ts-params__copy:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.ts-params__copy.copied {
+  background-color: #34a853;
+}
+
+.ts-empty {
+  text-align: center;
+  color: #999;
+  padding: 40px 16px;
+  font-size: 13px;
+  display: none;
+}
+
+.ts-empty.visible {
+  display: block;
+}

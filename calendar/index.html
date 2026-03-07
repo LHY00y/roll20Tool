@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendar</title>
+  <link rel="stylesheet" href="calendar.css">
+</head>
+
+<body>
+  <div class="cal">
+    <div class="cal__header">
+      <button class="cal__btn" id="btnPrev">‹</button>
+      <span class="cal__title" id="calTitle"></span>
+      <button class="cal__btn" id="btnNext">›</button>
+      <button class="cal__btn cal__btn--today" id="btnToday">오늘</button>
+      <button class="cal__btn cal__btn--subs" id="btnSubs" title="캘린더 구독 관리">
+        <img src="../assets/settings.svg" width="14" height="14">
+      </button>
+    </div>
+
+    <!-- iCal 구독 관리 패널 -->
+    <div class="subs-panel" id="subsPanel" style="display:none;">
+      <div class="subs-panel__header">
+        <span class="subs-panel__title">iCal 캘린더 구독</span>
+      </div>
+      <ul class="subs-list" id="subsList"></ul>
+      <div class="subs-add">
+        <input type="url" class="subs-add__input" id="subsUrlInput" placeholder="iCal URL (https://...)">
+        <button class="subs-add__btn" id="subsAddBtn">추가</button>
+      </div>
+      <div class="subs-status" id="subsStatus"></div>
+    </div>
+
+    <table class="cal__table">
+      <thead>
+        <tr>
+          <th class="sun">일</th>
+          <th>월</th>
+          <th>화</th>
+          <th>수</th>
+          <th>목</th>
+          <th>금</th>
+          <th class="sat">토</th>
+        </tr>
+      </thead>
+      <tbody id="calBody"></tbody>
+    </table>
+  </div>
+
+  <!-- 알림 설정 -->
+  <div class="cal-settings">
+    <div class="cal-settings__row">
+      <span class="cal-settings__label">🔗 URL 자동 열기</span>
+      <label class="toggle">
+        <input type="checkbox" id="toggleUrl" checked>
+        <span class="toggle__slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- 알림 팝업 -->
+  <div class="notify-popup" id="notifyPopup" style="display:none;">
+    <div class="notify-popup__icon">🔔</div>
+    <div class="notify-popup__body">
+      <div class="notify-popup__title" id="notifyTitle"></div>
+      <div class="notify-popup__time" id="notifyTime"></div>
+    </div>
+    <button class="notify-popup__close" id="notifyClose">확인</button>
+  </div>
+
+  <!-- 일정 패널 -->
+  <div class="evt-panel" id="evtPanel" style="display:none;">
+    <div class="evt-panel__header">
+      <span class="evt-panel__date" id="evtPanelDate"></span>
+      <button class="evt-panel__add" id="evtAddBtn" title="일정 추가">+</button>
+    </div>
+    <ul class="evt-list" id="evtList"></ul>
+    <div class="evt-empty" id="evtEmpty">일정이 없습니다.</div>
+  </div>
+
+  <!-- 수동 일정 폼 -->
+  <div class="evt-form-overlay" id="evtFormOverlay" style="display:none;">
+    <div class="evt-form" id="evtForm">
+      <div class="evt-form__header">
+        <span class="evt-form__title" id="evtFormTitle">일정 추가</span>
+        <button class="evt-form__close" id="evtFormClose">×</button>
+      </div>
+      <div class="evt-form__body">
+        <label class="evt-form__label">이름</label>
+        <input type="text" class="evt-form__input" id="evtName" placeholder="일정 이름">
+
+        <label class="evt-form__label">일자</label>
+        <input type="date" class="evt-form__input" id="evtDate">
+
+        <label class="evt-form__label">시간</label>
+        <input type="time" class="evt-form__input" id="evtTime">
+
+        <label class="evt-form__label">메모</label>
+        <textarea class="evt-form__textarea" id="evtMemo" rows="3" placeholder="메모"></textarea>
+
+        <label class="evt-form__label">URL</label>
+        <input type="url" class="evt-form__input" id="evtUrl" placeholder="https://...">
+        <span class="evt-form__hint">설정한 시간에 이 URL을 자동으로 엽니다.</span>
+
+        <div class="evt-form__notify-row">
+          <span class="evt-form__label">🔔 5분 전 알림</span>
+          <label class="toggle">
+            <input type="checkbox" id="evtNotify" checked>
+            <span class="toggle__slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="evt-form__footer">
+        <button class="evt-form__btn evt-form__btn--delete" id="evtDeleteBtn" style="display:none;">삭제</button>
+        <button class="evt-form__btn evt-form__btn--save" id="evtSaveBtn">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- iCal 이벤트 상세 (메모 & URL 어노테이션) -->
+  <div class="evt-form-overlay" id="icalDetailOverlay" style="display:none;">
+    <div class="evt-form" id="icalDetailForm">
+      <div class="evt-form__header">
+        <span class="evt-form__title" id="icalDetailTitle">iCal 일정</span>
+        <button class="evt-form__close" id="icalDetailClose">×</button>
+      </div>
+      <div class="evt-form__body">
+        <div class="ical-detail__info" id="icalDetailInfo"></div>
+
+        <label class="evt-form__label">메모</label>
+        <textarea class="evt-form__textarea" id="icalDetailMemo" rows="3" placeholder="메모 추가"></textarea>
+
+        <label class="evt-form__label">URL</label>
+        <input type="url" class="evt-form__input" id="icalDetailUrl" placeholder="https://...">
+        <span class="evt-form__hint">설정한 시간에 이 URL을 자동으로 엽니다.</span>
+
+        <div class="evt-form__notify-row">
+          <span class="evt-form__label">🔔 5분 전 알림</span>
+          <label class="toggle">
+            <input type="checkbox" id="icalDetailNotify" checked>
+            <span class="toggle__slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="evt-form__footer">
+        <button class="evt-form__btn evt-form__btn--save" id="icalDetailSave">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../theme.js"></script>
+  <script src="icalParser.js"></script>
+  <script src="calendarData.js"></script>
+  <script src="calendar.js"></script>
+  <script>
+    window.addEventListener(`dragover`, (evt = event) => {
+      evt.preventDefault();
+      evt.dataTransfer.effectAllowed = `none`;
+      evt.dataTransfer.dropEffect = `none`;
+    }, false);
+
+    window.addEventListener(`drop`, (evt = event) => {
+      evt.preventDefault();
+      evt.dataTransfer.effectAllowed = `none`;
+      evt.dataTransfer.dropEffect = `none`;
+    }, false)
+  </script>
+</body>
+
+</html>

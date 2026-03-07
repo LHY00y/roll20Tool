@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MacroStorage</title>
+  <link rel="stylesheet" href="macroStorage.css">
+</head>
+
+<body>
+  <div class="ms-toolbar">
+    <input type="text" class="ms-search" placeholder="검색...">
+    <button class="ms-btn-add" title="추가">+</button>
+  </div>
+  <div class="ms-tags" id="msTagFilter"></div>
+  <ul class="ms-list" id="msList"></ul>
+  <div class="ms-empty" id="msEmpty">저장된 매크로가 없습니다.</div>
+
+  <script src="macroStorage.js"></script>
+  <script src="macroStorageUI.js"></script>
+</body>
+
+</html>
+<script>
+  window.addEventListener(`dragover`, (evt = event) => {
+    evt.preventDefault();
+    evt.dataTransfer.effectAllowed = `none`;
+    evt.dataTransfer.dropEffect = `none`;
+  }, false);
+
+  window.addEventListener(`drop`, (evt = event) => {
+    evt.preventDefault();
+    evt.dataTransfer.effectAllowed = `none`;
+    evt.dataTransfer.dropEffect = `none`;
+  }, false)
+</script>
