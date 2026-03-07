@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>메모</title>
+  <link rel="stylesheet" href="memo.css">
+</head>
+
+<body>
+  <div class="memo-toolbar">
+    <label class="memo-storage-label" title="체크 시 내용을 저장합니다">
+      <input type="checkbox" id="toggleStorage">
+      <span>브라우저 종료 후에도 내용 유지</span>
+    </label>
+    <button class="memo-btn-copy" id="btnCopyAll">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2" />
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+      </svg>
+    </button>
+  </div>
+  <textarea class="memo-content" id="memoContent" placeholder=""></textarea>
+
+  <script src="../theme.js"></script>
+  <script src="../shared.js"></script>
+  <script src="memoUI.js"></script>
+</body>
+
+</html>
+<script>
+  window.addEventListener(`dragover`, (evt = event) => {
+    evt.preventDefault();
+    evt.dataTransfer.effectAllowed = `none`;
+    evt.dataTransfer.dropEffect = `none`;
+  }, false);
+
+  window.addEventListener(`drop`, (evt = event) => {
+    evt.preventDefault();
+    evt.dataTransfer.effectAllowed = `none`;
+    evt.dataTransfer.dropEffect = `none`;
+  }, false)
+</script>

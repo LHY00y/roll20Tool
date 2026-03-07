@@ -5,10 +5,11 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: Paperozi, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 14px;
   color: var(--color-text);
   background-color: var(--color-bg);
+  height: 100vh;
 }
 
 .ms-detail {
@@ -232,11 +233,11 @@ body {
   transition: all 0.2s;
 }
 
-.toggle input:checked + .toggle__slider {
+.toggle input:checked+.toggle__slider {
   background-color: var(--color-primary);
 }
 
-.toggle input:checked + .toggle__slider::before {
+.toggle input:checked+.toggle__slider::before {
   transform: translateX(18px);
 }
 

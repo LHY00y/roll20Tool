@@ -17,7 +17,15 @@
     "service_worker": "background.js"
   },
   "permissions": [
-    "storage"
+    "storage",
+    "tabs",
+    "scripting",
+    "activeTab",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "*://app.roll20.net/*",
+    "*://roll20.net/*"
   ],
   "icons": {
     "16": "assets/icons/icon16.png",

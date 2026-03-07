@@ -686,9 +686,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 초기 렌더링
-  Promise.all([CalendarEvents.init(), CalendarIcal.init(), loadSettings()]).then(() => {
+  Promise.all([CalendarEvents.init(), CalendarIcal.init(), loadSettings()]).then(async () => {
     setInterval(checkScheduledEvents, 30000);
     checkScheduledEvents();
-    render();
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    selectedDate = todayStr;
+    await render();
+    showEventsPanel(todayStr);
   });
 });

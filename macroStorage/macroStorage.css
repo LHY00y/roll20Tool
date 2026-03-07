@@ -5,11 +5,12 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: Paperozi, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 14px;
   color: var(--color-text);
   background-color: var(--color-bg);
   padding: 16px;
+  height: 100vh;
 }
 
 /* 툴바 */
@@ -50,6 +51,63 @@ body {
 
 .ms-btn-add:hover {
   background-color: var(--color-primary-hover);
+}
+
+/* 메모 토글 버튼 */
+.ms-btn-memo-toggle {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  color: #999;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.ms-btn-memo-toggle:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.ms-btn-memo-toggle.active {
+  background-color: var(--color-primary-light);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* 선택 바 */
+.ms-select-bar {
+  display: flex;
+  gap: 6px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.ms-btn-select-all,
+.ms-btn-deselect-all {
+  font-size: 12px;
+  padding: 4px 10px;
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  background: #fff;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ms-btn-select-all:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.ms-btn-deselect-all:hover {
+  border-color: #d32f2f;
+  color: #d32f2f;
 }
 
 /* 태그 필터 */
@@ -235,6 +293,24 @@ body {
   border-radius: 3px;
 }
 
+/* 메모 영역 */
+.ms-item__memo {
+  font-size: 12px;
+  color: #777;
+  margin-top: 4px;
+  padding: 4px 8px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  border-left: 2px solid #ddd;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.5;
+}
+
+.ms-item__memo.hidden {
+  display: none;
+}
+
 /* 뱃지 (lookAuth, tokenOpt) */
 .ms-item__badge {
   display: inline-flex;
@@ -288,4 +364,101 @@ body {
 
 .ms-empty.visible {
   display: block;
+}
+
+/* 하단 푸터 */
+.ms-footer {
+  position: fixed;
+  bottom: 0;
+  background: #fff;
+  padding: 12px 0;
+  border-top: 1px solid #eee;
+  margin-top: 8px;
+  width: calc(100% - 32px);
+}
+
+.ms-btn-roll20 {
+  width: 100%;
+  padding: 10px 0;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--color-primary);
+  color: var(--color-primary-text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.ms-btn-roll20:hover:not(:disabled) {
+  background-color: var(--color-primary);
+}
+
+.ms-btn-roll20:disabled {
+  background-color: #ccc;
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* 로딩 스피너 */
+.ms-btn-roll20__spinner {
+  display: none;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: ms-spin 0.6s linear infinite;
+}
+
+.ms-btn-roll20.loading .ms-btn-roll20__spinner {
+  display: block;
+}
+
+.ms-btn-roll20.loading {
+  background-color: var(--color-primary);
+  color: var(--color-primary-text);
+  pointer-events: none;
+}
+
+@keyframes ms-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 토스트 */
+.ms-toast {
+  position: fixed;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  white-space: nowrap;
+  z-index: 100;
+}
+
+.ms-toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.ms-toast.success {
+  background-color: var(--color-primary);
+  color: var(--color-primary-text);
+}
+
+.ms-toast.error {
+  background-color: #d32f2f;
 }

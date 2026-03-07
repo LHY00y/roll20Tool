@@ -5,10 +5,11 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: Paperozi, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 14px;
   color: var(--color-text);
   background-color: var(--color-bg);
+  height: 100vh;
 }
 
 .hidden {
@@ -262,18 +263,45 @@ body {
 }
 
 /* Markdown styles */
-.preview-box h1 { font-size: 20px; font-weight: 700; margin: 12px 0 8px; }
-.preview-box h2 { font-size: 17px; font-weight: 700; margin: 10px 0 6px; }
-.preview-box h3 { font-size: 15px; font-weight: 600; margin: 8px 0 4px; }
+.preview-box h1 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 12px 0 8px;
+}
+
+.preview-box h2 {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 10px 0 6px;
+}
+
+.preview-box h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 8px 0 4px;
+}
+
 .preview-box h1:first-child,
 .preview-box h2:first-child,
-.preview-box h3:first-child { margin-top: 0; }
+.preview-box h3:first-child {
+  margin-top: 0;
+}
 
-.preview-box p { margin: 0 0 8px; }
-.preview-box p:last-child { margin-bottom: 0; }
+.preview-box p {
+  margin: 0 0 8px;
+}
 
-.preview-box strong { font-weight: 700; }
-.preview-box em { font-style: italic; }
+.preview-box p:last-child {
+  margin-bottom: 0;
+}
+
+.preview-box strong {
+  font-weight: 700;
+}
+
+.preview-box em {
+  font-style: italic;
+}
 
 .preview-box code {
   background-color: #e8e8e8;
@@ -299,12 +327,15 @@ body {
   font-size: 13px;
 }
 
-.preview-box ul, .preview-box ol {
+.preview-box ul,
+.preview-box ol {
   padding-left: 20px;
   margin: 6px 0;
 }
 
-.preview-box li { margin: 2px 0; }
+.preview-box li {
+  margin: 2px 0;
+}
 
 .preview-box blockquote {
   border-left: 3px solid var(--color-primary);
@@ -320,7 +351,9 @@ body {
   text-decoration: none;
 }
 
-.preview-box a:hover { text-decoration: underline; }
+.preview-box a:hover {
+  text-decoration: underline;
+}
 
 .preview-box hr {
   border: none;
@@ -335,7 +368,8 @@ body {
   font-size: 13px;
 }
 
-.preview-box th, .preview-box td {
+.preview-box th,
+.preview-box td {
   border: 1px solid #ddd;
   padding: 6px 10px;
   text-align: left;

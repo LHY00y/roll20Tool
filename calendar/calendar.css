@@ -5,11 +5,12 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: Paperozi, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 14px;
   color: var(--color-text);
   background-color: var(--color-bg);
   padding: 16px;
+  height: 100vh;
 }
 
 /* ════════════ 달력 헤더 ════════════ */
@@ -292,7 +293,7 @@ body {
 
 .cal__day--today {
   background-color: var(--color-primary);
-  color: #fff;
+  color: var(--color-primary-text) !important;
   font-weight: 700;
 }
 

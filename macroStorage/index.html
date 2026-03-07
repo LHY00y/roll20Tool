@@ -11,13 +11,35 @@
 <body>
   <div class="ms-toolbar">
     <input type="text" class="ms-search" placeholder="검색...">
+    <button class="ms-btn-memo-toggle" id="msMemoToggle" title="메모 표시/숨기기">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+      </svg>
+    </button>
     <button class="ms-btn-add" title="추가">+</button>
+  </div>
+  <div class="ms-select-bar">
+    <button class="ms-btn-select-all" id="msBtnSelectAll">전체 선택</button>
+    <button class="ms-btn-deselect-all" id="msBtnDeselectAll">전체 해제</button>
   </div>
   <div class="ms-tags" id="msTagFilter"></div>
   <ul class="ms-list" id="msList"></ul>
   <div class="ms-empty" id="msEmpty">저장된 매크로가 없습니다.</div>
 
+  <div class="ms-footer">
+    <button class="ms-btn-roll20" id="msBtnRoll20" disabled>
+      <span class="ms-btn-roll20__spinner"></span>
+      <span class="ms-btn-roll20__text">Roll20에 추가</span>
+    </button>
+  </div>
+  <div class="ms-toast" id="msToast"></div>
+
   <script src="../theme.js"></script>
+  <script src="../shared.js"></script>
+  <script src="../storageData.js"></script>
   <script src="macroStorage.js"></script>
   <script src="macroStorageUI.js"></script>
 </body>
