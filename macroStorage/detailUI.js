@@ -57,10 +57,20 @@ document.addEventListener('DOMContentLoaded', () => {
     tagInput.value = '';
   }
 
+  // ── 태그 자동완성 ──
+  const ac = setupTagAutocomplete({
+    tagInput,
+    tagInputWrap,
+    getExistingTags: () => MacroStorage.getAllTags(),
+    getTags: () => tags,
+    onSelect: (tag) => { addTag(tag); }
+  });
+
   tagInput.addEventListener('keydown', (e) => {
+    if (e.isComposing) return; // 한글 IME 조합 중 무시
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault();
-      addTag(tagInput.value);
+      if (!ac.isHandling()) addTag(tagInput.value);
     }
     if (e.key === 'Backspace' && tagInput.value === '' && tags.length > 0) {
       tags.pop();

@@ -271,6 +271,67 @@ document.addEventListener('DOMContentLoaded', () => {
     syncThemeInputs(theme);
   });
 
+  // ── 색상 그룹 (HEX 입력) ──
+  const hexInputMap = {};
+
+  [
+    { input: themeTextInput, key: 'text' },
+    { input: themeBgInput, key: 'bg' },
+    { input: themePrimaryInput, key: 'primary' },
+    { input: themePrimaryTextInput, key: 'primaryText' }
+  ].forEach(({ input, key }) => {
+    const hexInput = document.createElement('input');
+    hexInput.type = 'text';
+    hexInput.className = 'theme-modal__hex';
+    hexInput.maxLength = 7;
+    hexInput.spellcheck = false;
+    hexInputMap[key] = hexInput;
+
+    hexInput.addEventListener('change', () => {
+      let val = hexInput.value.trim();
+      if (!val.startsWith('#')) val = '#' + val;
+      if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+        input.value = val;
+        hexInput.value = val;
+        input.dispatchEvent(new Event('input'));
+      } else {
+        hexInput.value = input.value; // 잘못된 입력 복원
+      }
+    });
+
+    // color swatch 변경 시 hex도 동기화
+    input.addEventListener('input', () => { hexInput.value = input.value; });
+
+    const wrap = document.createElement('div');
+    wrap.className = 'theme-modal__color-group';
+    input.parentNode.replaceChild(wrap, input);
+    wrap.appendChild(input);
+    wrap.appendChild(hexInput);
+  });
+
+  // syncThemeInputs 재정의 (hex input도 함께 동기화)
+  syncThemeInputs = (theme) => {
+    themeTextInput.value = theme.text;
+    themeBgInput.value = theme.bg;
+    themePrimaryInput.value = theme.primary;
+    themePrimaryTextInput.value = theme.primaryText || ThemeManager.DEFAULTS.primaryText;
+    if (hexInputMap.text) hexInputMap.text.value = theme.text;
+    if (hexInputMap.bg) hexInputMap.bg.value = theme.bg;
+    if (hexInputMap.primary) hexInputMap.primary.value = theme.primary;
+    if (hexInputMap.primaryText) hexInputMap.primaryText.value = theme.primaryText || ThemeManager.DEFAULTS.primaryText;
+  };
+
+  // ── 메모 추가 시 메모탭 자동 전환 ──
+  whale.storage.onChanged.addListener((changes, area) => {
+    if (area !== 'local' || !changes.memo_append?.newValue) return;
+    const memoTabEl = nav.querySelector('.nav-tab[data-page="page5"]');
+    if (!memoTabEl) return;
+    nav.querySelectorAll('.nav-tab[data-page]').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    memoTabEl.classList.add('active');
+    document.getElementById('page5').classList.add('active');
+  });
+
   // ── 초기화 ──
   loadOrder();
   loadVisibility();

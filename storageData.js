@@ -12,10 +12,15 @@ function createStorageData(STORAGE_KEY, { searchFields = [], stripOnSave = [] } 
   }
 
   function save() {
-    const toSave = stripOnSave.length
-      ? items.map(item => { const c = { ...item }; stripOnSave.forEach(k => delete c[k]); return c; })
-      : items;
-    whale.storage.sync.set({ [STORAGE_KEY]: toSave });
+    // 항상 얕은 복사본으로 저장 (라이브 레퍼런스 전달 방지)
+    const toSave = items.map(item => {
+      const c = { ...item };
+      stripOnSave.forEach(k => delete c[k]);
+      return c;
+    });
+    return new Promise(resolve => {
+      whale.storage.sync.set({ [STORAGE_KEY]: toSave }, resolve);
+    });
   }
 
   function nextIdx() {
@@ -59,13 +64,28 @@ function createStorageData(STORAGE_KEY, { searchFields = [], stripOnSave = [] } 
   }
 
   function reorder(orderedIdxList) {
+    // Map으로 캡처 (idx 변경 전 스냅샷)
+    const idxMap = new Map(items.map(item => [item.idx, item]));
+    const inListSet = new Set(orderedIdxList);
+
     const reordered = [];
-    orderedIdxList.forEach((oldIdx, i) => {
-      const item = items.find(it => it.idx === oldIdx);
-      if (item) { item.idx = i + 1; reordered.push(item); }
+
+    // 1. 사용자가 드래그한 순서대로 보이는 항목 추가
+    orderedIdxList.forEach(oldIdx => {
+      const item = idxMap.get(oldIdx);
+      if (item) reordered.push(item);
     });
+
+    // 2. 필터로 숨겨진 항목은 뒤에 추가 (삭제 방지)
+    items.forEach(item => {
+      if (!inListSet.has(item.idx)) reordered.push(item);
+    });
+
+    // 3. idx 재할당 (보이는 항목 먼저, 숨겨진 항목 뒤)
+    reordered.forEach((item, i) => { item.idx = i + 1; });
+
     items = reordered;
-    save();
+    return save(); // Promise 반환 → 저장 완료 후 onSettle 실행
   }
 
   function search(keyword) {

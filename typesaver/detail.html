@@ -70,22 +70,11 @@
     </div>
 
     <script src="../theme.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="../shared.js"></script>
+    <script src="../lib/marked.min.js"></script>
     <script src="typeSaver.js"></script>
     <script src="detailUI.js"></script>
+    <script src="../nodrop.js"></script>
 </body>
 
 </html>
-<script>
-    window.addEventListener(`dragover`, (evt = event) => {
-        evt.preventDefault();
-        evt.dataTransfer.effectAllowed = `none`;
-        evt.dataTransfer.dropEffect = `none`;
-    }, false);
-
-    window.addEventListener(`drop`, (evt = event) => {
-        evt.preventDefault();
-        evt.dataTransfer.effectAllowed = `none`;
-        evt.dataTransfer.dropEffect = `none`;
-    }, false)
-</script>

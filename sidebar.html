@@ -75,6 +75,11 @@
       </nav>
       <!-- 탭 가시성 설정 메뉴 -->
       <div class="tab-settings" id="tabSettings" style="display:none;">
+        <!-- 테마 설정 -->
+        <div class="theme-settings">
+          <button class="theme-settings__btn" id="btnThemeModal">🎨 테마 설정</button>
+        </div>
+        <div class="theme-settings__divider"></div>
         <div class="tab-settings__item" data-page="page1" data-visible="true" draggable="true">
           <span class="tab-settings__handle">☰</span>
           <span class="tab-settings__name">클립보드</span>
@@ -150,11 +155,7 @@
             <line x1="1" y1="1" x2="23" y2="23" />
           </svg>
         </div>
-        <!-- 테마 설정 -->
-        <div class="theme-settings__divider"></div>
-        <div class="theme-settings">
-          <button class="theme-settings__btn" id="btnThemeModal">🎨 테마 설정</button>
-        </div>
+
       </div>
     </header>
   </div>
@@ -191,19 +192,7 @@
 
   <script src="theme.js"></script>
   <script src="sidebar.js"></script>
+  <script src="nodrop.js"></script>
 </body>
 
 </html>
-<script>
-  window.addEventListener(`dragover`, (evt = event) => {
-    evt.preventDefault();
-    evt.dataTransfer.effectAllowed = `none`;
-    evt.dataTransfer.dropEffect = `none`;
-  }, false);
-
-  window.addEventListener(`drop`, (evt = event) => {
-    evt.preventDefault();
-    evt.dataTransfer.effectAllowed = `none`;
-    evt.dataTransfer.dropEffect = `none`;
-  }, false)
-</script>

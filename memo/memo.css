@@ -16,6 +16,22 @@ body {
   gap: 10px;
 }
 
+/* 스크롤바 전체 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* 스크롤바 배경 */
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+/* 스크롤바 막대 */
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 4px;
+}
+
 /* 툴바 */
 .memo-toolbar {
   display: flex;

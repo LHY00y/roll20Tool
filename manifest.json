@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "클립보드",
+  "name": "마키보드",
   "version": "1.0.0",
   "description": "Roll20 특화 클립보드",
   "sidebar_action": {
@@ -10,7 +10,7 @@
       "48": "assets/icons/icon48.png",
       "128": "assets/icons/icon128.png"
     },
-    "default_title": "클립보드",
+    "default_title": "마키보드",
     "use_navigation_bar": false
   },
   "background": {
@@ -21,11 +21,14 @@
     "tabs",
     "scripting",
     "activeTab",
-    "contextMenus"
+    "contextMenus",
+    "notifications",
+    "alarms"
   ],
   "host_permissions": [
     "*://app.roll20.net/*",
-    "*://roll20.net/*"
+    "*://roll20.net/*",
+    "<all_urls>"
   ],
   "icons": {
     "16": "assets/icons/icon16.png",

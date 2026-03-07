@@ -40,12 +40,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // ── 태그 자동완성 ──
+  const ac = setupTagAutocomplete({
+    tagInput: inputTag,
+    tagInputWrap,
+    getExistingTags: () => TypeSaver.getAllTags(),
+    getTags: () => tags,
+    onSelect: (tag) => { addTag(tag); }
+  });
+
   // 쉼표 또는 Enter로 태그 추가
   inputTag.addEventListener('keydown', (e) => {
+    if (e.isComposing) return; // 한글 IME 조합 중 무시
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault();
-      addTag(inputTag.value.replace(/,/g, ''));
-      inputTag.value = '';
+      if (!ac.isHandling()) {
+        addTag(inputTag.value.replace(/,/g, ''));
+        inputTag.value = '';
+      }
     }
     if (e.key === 'Backspace' && !inputTag.value && tags.length > 0) {
       tags.pop();
@@ -213,8 +225,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 미리보기 복사 (HTML + 플레인텍스트)
   const btnCopyPreview = document.getElementById('btnCopyPreview');
-  const SVG_COPY = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
-  const SVG_CHECK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
 
   btnCopyPreview.addEventListener('click', () => {
     const text = getResolvedText();

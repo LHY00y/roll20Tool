@@ -60,16 +60,6 @@
     </div>
   </div>
 
-  <!-- 알림 팝업 -->
-  <div class="notify-popup" id="notifyPopup" style="display:none;">
-    <div class="notify-popup__icon">🔔</div>
-    <div class="notify-popup__body">
-      <div class="notify-popup__title" id="notifyTitle"></div>
-      <div class="notify-popup__time" id="notifyTime"></div>
-    </div>
-    <button class="notify-popup__close" id="notifyClose">확인</button>
-  </div>
-
   <!-- 일정 패널 -->
   <div class="evt-panel" id="evtPanel" style="display:none;">
     <div class="evt-panel__header">
@@ -154,19 +144,7 @@
   <script src="icalParser.js"></script>
   <script src="calendarData.js"></script>
   <script src="calendar.js"></script>
-  <script>
-    window.addEventListener(`dragover`, (evt = event) => {
-      evt.preventDefault();
-      evt.dataTransfer.effectAllowed = `none`;
-      evt.dataTransfer.dropEffect = `none`;
-    }, false);
-
-    window.addEventListener(`drop`, (evt = event) => {
-      evt.preventDefault();
-      evt.dataTransfer.effectAllowed = `none`;
-      evt.dataTransfer.dropEffect = `none`;
-    }, false)
-  </script>
+  <script src="../nodrop.js"></script>
 </body>
 
 </html>

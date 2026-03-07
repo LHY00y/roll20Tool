@@ -86,8 +86,13 @@ function setupDragSort({ listEl, itemClass, onReorder, onSettle }) {
     isDragging = false;
     listEl.querySelectorAll('.' + itemClass).forEach(e => e.classList.remove('drag-over'));
     const orderedIdxList = [...listEl.querySelectorAll('.' + itemClass)].map(e => Number(e.dataset.idx));
-    onReorder(orderedIdxList);
-    onSettle();
+    // save() 완료 후 onSettle 실행 (race condition 방지: 저장 전에 새 idx로 클릭하면 잘못된 항목 수정됨)
+    const result = onReorder(orderedIdxList);
+    if (result && typeof result.then === 'function') {
+      result.then(onSettle);
+    } else {
+      onSettle();
+    }
   });
   listEl.addEventListener('dragover', (e) => {
     e.preventDefault();
@@ -101,6 +106,88 @@ function setupDragSort({ listEl, itemClass, onReorder, onSettle }) {
     else listEl.insertBefore(dragItem, target.nextSibling);
   });
   return { get isDragging() { return isDragging; } };
+}
+
+// ── 태그 자동완성 설정 ──
+function setupTagAutocomplete({ tagInput, tagInputWrap, getExistingTags, getTags, onSelect }) {
+  tagInputWrap.style.position = 'relative';
+  const dropdown = document.createElement('div');
+  dropdown.className = 'tag-autocomplete';
+  tagInputWrap.appendChild(dropdown);
+
+  let activeIdx = -1;
+  let suggestions = [];
+
+  function show(items) {
+    suggestions = items;
+    activeIdx = -1;
+    dropdown.innerHTML = '';
+    if (items.length === 0) { dropdown.classList.remove('open'); return; }
+    items.forEach(tag => {
+      const item = document.createElement('div');
+      item.className = 'tag-autocomplete__item';
+      item.textContent = tag;
+      item.addEventListener('mousedown', (e) => {
+        e.preventDefault(); // blur 이전에 mousedown 처리
+        select(tag);
+      });
+      dropdown.appendChild(item);
+    });
+    dropdown.classList.add('open');
+    updateActive();
+  }
+
+  function hide() {
+    dropdown.classList.remove('open');
+    activeIdx = -1;
+    suggestions = [];
+  }
+
+  function updateActive() {
+    [...dropdown.querySelectorAll('.tag-autocomplete__item')].forEach((el, i) => {
+      el.classList.toggle('active', i === activeIdx);
+    });
+  }
+
+  function select(tag) {
+    onSelect(tag);
+    tagInput.value = ''; // 선택 후 입력창 정리 (기존 태그 칩은 유지)
+    hide();
+  }
+
+  function refresh() {
+    const q = tagInput.value.trim().toLowerCase();
+    const current = getTags();
+    const all = getExistingTags().filter(t => !current.includes(t));
+    const filtered = q ? all.filter(t => t.toLowerCase().includes(q)) : all;
+    show(filtered);
+  }
+
+  tagInput.addEventListener('input', refresh);
+
+  tagInput.addEventListener('keydown', (e) => {
+    if (e.isComposing) return; // 한글 IME 조합 중 무시
+    if (!dropdown.classList.contains('open')) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIdx = Math.min(activeIdx + 1, suggestions.length - 1);
+      updateActive();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIdx = Math.max(activeIdx - 1, -1);
+      updateActive();
+    } else if (e.key === 'Enter' && activeIdx >= 0) {
+      select(suggestions[activeIdx]);
+    } else if (e.key === 'Escape') {
+      hide();
+    }
+  });
+
+  tagInput.addEventListener('blur', () => setTimeout(hide, 150));
+  tagInput.addEventListener('focus', refresh); // 포커스 시 전체 목록 표시
+
+  // isHandling(): Enter 키를 자동완성이 처리 중인지 여부 (호출부에서 addTag 억제에 사용)
+  return { isHandling: () => dropdown.classList.contains('open') && activeIdx >= 0 };
 }
 
 // ── 메모 토글 설정 ──

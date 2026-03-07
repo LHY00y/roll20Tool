@@ -13,6 +13,22 @@ body {
   height: 100vh;
 }
 
+/* 스크롤바 전체 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* 스크롤바 배경 */
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+/* 스크롤바 막대 */
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 4px;
+}
+
 /* 툴바 */
 .ms-toolbar {
   display: flex;
@@ -148,6 +164,7 @@ body {
 /* 목록 */
 .ms-list {
   list-style: none;
+  padding-bottom: 60px;
 }
 
 .ms-item {
@@ -250,7 +267,7 @@ body {
 }
 
 .ms-item__bookmark.active {
-  color: #f5a623;
+  color: var(--color-primary);
 }
 
 /* 정보 영역 */
@@ -301,7 +318,6 @@ body {
   padding: 4px 8px;
   background-color: #f8f9fa;
   border-radius: 4px;
-  border-left: 2px solid #ddd;
   white-space: pre-wrap;
   word-break: break-word;
   line-height: 1.5;

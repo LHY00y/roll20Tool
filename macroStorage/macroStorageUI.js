@@ -83,10 +83,11 @@ document.addEventListener('DOMContentLoaded', () => {
       ]);
       msList.appendChild(el('li', { className: 'ms-item', draggable: 'true', dataset: { idx: item.idx } }, [
         el('span', { className: 'ms-item__handle', textContent: '☰' }),
-        checkLabel,
         el('button', { className: 'ms-item__bookmark' + (item.bookmark ? ' active' : ''), dataset: { idx: item.idx }, textContent: item.bookmark ? '★' : '☆' }),
         info,
-        el('button', { className: 'ms-item__copy', dataset: { idx: item.idx }, title: '복사', innerHTML: SVG_COPY })
+        el('button', { className: 'ms-item__copy', dataset: { idx: item.idx }, title: '복사', innerHTML: SVG_COPY },
+
+        ), checkLabel
       ]));
     });
   }

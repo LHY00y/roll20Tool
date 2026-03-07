@@ -88,6 +88,8 @@ body {
   overflow: hidden;
 }
 
+
+
 #app {
   display: flex;
   flex-direction: column;
@@ -150,7 +152,7 @@ body {
 
 /* 설정 버튼 */
 .nav-tab--settings {
-  flex: 0 0 36px;
+  flex: 0.7;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -165,6 +167,7 @@ body {
 .nav-tab--settings::after {
   display: none !important;
 }
+
 
 /* 설정 버튼 래퍼 (말풍선 기준점) */
 .header {
@@ -333,7 +336,7 @@ body {
   color: #333;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-  width: 240px;
+  width: 270px;
   overflow: hidden;
 }
 
@@ -383,6 +386,12 @@ body {
   user-select: none;
 }
 
+.theme-modal__color-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .theme-modal__color {
   width: 36px;
   height: 24px;
@@ -392,6 +401,25 @@ body {
   cursor: pointer;
   background: none;
 }
+
+.theme-modal__hex {
+  width: 62px;
+  height: 24px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 0 4px;
+  font-size: 11px;
+  font-family: inherit;
+  color: inherit;
+  background: transparent;
+  text-align: center;
+}
+
+.theme-modal__hex:focus {
+  outline: none;
+  border-color: #888;
+}
+
 
 .theme-modal__footer {
   padding: 10px 16px 14px;

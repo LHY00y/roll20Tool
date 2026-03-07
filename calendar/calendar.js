@@ -212,8 +212,13 @@ document.addEventListener('DOMContentLoaded', () => {
       li.innerHTML = `
         <span class="evt-item__dot" style="background-color:${getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#1a73e8'};"></span>
         <span class="evt-item__time">${evt.time || ''}</span>
-        <span class="evt-item__name">${escapeHtml(evt.name)}</span>
-        ${urlIcon}
+        <div class="evt-item__body">
+          <div class="evt-item__name-row">
+            <span class="evt-item__name">${escapeHtml(evt.name)}</span>
+            ${urlIcon}
+          </div>
+          ${evt.memo ? `<div class="evt-item__memo">${escapeHtml(evt.memo)}</div>` : ''}
+        </div>
       `;
 
       li.addEventListener('click', () => openFormForEdit(evt.id));
@@ -229,13 +234,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const annot = CalendarIcal.getAnnotation(evt.subId, evt.uid);
       const urlIcon = (annot && annot.url) ? '<span class="evt-item__url-icon" title="URL 연결됨">🔗</span>' : '';
-      const memoIcon = (annot && annot.memo) ? '<span class="evt-item__memo-icon" title="메모 있음">📝</span>' : '';
 
       li.innerHTML = `
         <span class="evt-item__dot" style="background-color:${evt.subColor};"></span>
         <span class="evt-item__time">${evt.dtstart.time || (evt.allDay ? '종일' : '')}</span>
-        <span class="evt-item__name">${escapeHtml(evt.summary)}</span>
-        ${memoIcon}${urlIcon}
+        <div class="evt-item__body">
+          <div class="evt-item__name-row">
+            <span class="evt-item__name">${escapeHtml(evt.summary)}</span>
+            ${urlIcon}
+          </div>
+          ${annot && annot.memo ? `<div class="evt-item__memo">${escapeHtml(annot.memo)}</div>` : ''}
+        </div>
       `;
 
       li.addEventListener('click', () => openIcalDetail(evt));
@@ -495,10 +504,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   btnToday.addEventListener('click', () => {
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     currentYear = today.getFullYear();
     currentMonth = today.getMonth();
-    selectedDate = null;
+    selectedDate = todayStr;
     evtPanel.style.display = 'none';
+    showEventsPanel(todayStr)
     render();
   });
 
@@ -553,130 +564,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ══════════════════════════════════
-  //  알림 팝업
-  // ══════════════════════════════════
-  const notifyPopup = document.getElementById('notifyPopup');
-  const notifyTitle = document.getElementById('notifyTitle');
-  const notifyTime = document.getElementById('notifyTime');
-  const notifyClose = document.getElementById('notifyClose');
-  let notifyTimer = null;
-  let notifyQueue = [];
-
-  function showNotification(name, time) {
-    notifyQueue.push({ name, time });
-    if (notifyPopup.style.display === 'none') {
-      _displayNext();
-    }
-  }
-
-  function _displayNext() {
-    if (notifyQueue.length === 0) {
-      notifyPopup.style.display = 'none';
-      return;
-    }
-    const item = notifyQueue.shift();
-    notifyTitle.textContent = item.name;
-    notifyTime.textContent = `${item.time} 시작 (5분 전)`;
-    notifyPopup.style.display = 'flex';
-    // 30초 후 자동 닫기
-    clearTimeout(notifyTimer);
-    notifyTimer = setTimeout(dismissNotification, 30000);
-  }
-
-  function dismissNotification() {
-    clearTimeout(notifyTimer);
-    notifyPopup.style.display = 'none';
-    // 대기열에 남은 알림 표시
-    if (notifyQueue.length > 0) {
-      setTimeout(_displayNext, 300);
-    }
-  }
-
-  notifyClose.addEventListener('click', dismissNotification);
-
-
-  // ══════════════════════════════════
-  //  타이머 (5분전 팝업 + URL 자동 열기)
-  // ══════════════════════════════════
-  let firedKeys = new Set();
-
-  function _timeMinus5(timeStr) {
-    if (!timeStr) return null;
-    const [h, m] = timeStr.split(':').map(Number);
-    let total = h * 60 + m - 5;
-    if (total < 0) total += 24 * 60;
-    return `${String(Math.floor(total / 60) % 24).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
-  }
-
-  function checkScheduledEvents() {
-    const now = new Date();
-    const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-    const urlOn = toggleUrl.checked;
-
-    // ── 수동 일정 체크 ──
-    const manualEvents = CalendarEvents.getByDate(dateStr);
-    manualEvents.forEach(evt => {
-      if (!evt.time) return;
-
-      // 5분 전 팝업 알림 (이벤트별 설정)
-      if (evt.notify !== false) {
-        const alertKey = `popup_manual_${evt.id}`;
-        const alertTime = _timeMinus5(evt.time);
-        if (alertTime === timeStr && !firedKeys.has(alertKey)) {
-          firedKeys.add(alertKey);
-          showNotification(evt.name, evt.time);
-        }
-      }
-
-      // URL 자동 열기 (정시)
-      if (urlOn && evt.url) {
-        const urlKey = `url_manual_${evt.id}`;
-        if (evt.time === timeStr && !firedKeys.has(urlKey)) {
-          firedKeys.add(urlKey);
-          window.open(evt.url, '_blank');
-        }
-      }
-    });
-
-    // ── iCal 이벤트 체크 ──
-    const subs = CalendarIcal.getSubs().filter(s => s.enabled);
-    subs.forEach(sub => {
-      try {
-        const cached = CalendarIcal.getCache(sub.id);
-        if (!cached) return;
-
-        cached.events.forEach(evt => {
-          if (!evt.dtstart || evt.dtstart.date !== dateStr || !evt.dtstart.time) return;
-
-          const annot = CalendarIcal.getAnnotation(sub.id, evt.uid);
-
-          // 5분 전 팝업 알림 (어노테이션에 notify 설정이 있으면 따름, 기본 true)
-          const notifyOn = annot ? annot.notify !== false : true;
-          if (notifyOn) {
-            const alertKey = `popup_ical_${sub.id}_${evt.uid}`;
-            const alertTime = _timeMinus5(evt.dtstart.time);
-            if (alertTime === timeStr && !firedKeys.has(alertKey)) {
-              firedKeys.add(alertKey);
-              showNotification(evt.summary || sub.name, evt.dtstart.time);
-            }
-          }
-
-          // URL 자동 열기 (어노테이션에 URL이 있는 경우만, 정시)
-          if (urlOn && annot && annot.url) {
-            const urlKey = `url_ical_${sub.id}_${evt.uid}`;
-            if (evt.dtstart.time === timeStr && !firedKeys.has(urlKey)) {
-              firedKeys.add(urlKey);
-              window.open(annot.url, '_blank');
-            }
-          }
-        });
-      } catch (e) { /* ignore */ }
-    });
-  }
-
-  // ══════════════════════════════════
   //  유틸
   // ══════════════════════════════════
   function escapeHtml(str) {
@@ -687,8 +574,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 초기 렌더링
   Promise.all([CalendarEvents.init(), CalendarIcal.init(), loadSettings()]).then(async () => {
-    setInterval(checkScheduledEvents, 30000);
-    checkScheduledEvents();
     const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     selectedDate = todayStr;
     await render();

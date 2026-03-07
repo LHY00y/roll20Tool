@@ -13,6 +13,27 @@ body {
   height: 100vh;
 }
 
+/* 스크롤바 전체 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* 스크롤바 배경 */
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+/* 스크롤바 막대 */
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 4px;
+}
+
+/* hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-hover);
+}
+
 /* TypeSaver */
 .ts-toolbar {
   display: flex;
@@ -145,7 +166,7 @@ body {
 }
 
 .ts-item__bookmark.active {
-  color: #f5a623;
+  color: var(--color-primary);
 }
 
 .ts-item__info {
