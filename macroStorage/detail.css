@@ -157,7 +157,7 @@ textarea {
   gap: 2px;
   font-size: 12px;
   color: var(--color-primary);
-  background-color: color-mix(in srgb, var(--color-primary) 60%, transparent);
+  background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
   padding: 2px 6px;
   border-radius: 4px;
   white-space: nowrap;
