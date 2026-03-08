@@ -64,21 +64,24 @@ function createStorageData(STORAGE_KEY, { searchFields = [], stripOnSave = [] } 
   }
 
   function reorder(orderedIdxList) {
-    // Map으로 캡처 (idx 변경 전 스냅샷)
-    const idxMap = new Map(items.map(item => [item.idx, item]));
+    // Map으로 캡처 (복사본 사용 — 참조 공유로 인한 중복·데이터 손실 방지)
+    const idxMap = new Map(items.map(item => [item.idx, { ...item }]));
     const inListSet = new Set(orderedIdxList);
+    const seen = new Set();
 
     const reordered = [];
 
     // 1. 사용자가 드래그한 순서대로 보이는 항목 추가
     orderedIdxList.forEach(oldIdx => {
+      if (seen.has(oldIdx)) return;          // stale DOM 중복 idx 방어
+      seen.add(oldIdx);
       const item = idxMap.get(oldIdx);
       if (item) reordered.push(item);
     });
 
     // 2. 필터로 숨겨진 항목은 뒤에 추가 (삭제 방지)
     items.forEach(item => {
-      if (!inListSet.has(item.idx)) reordered.push(item);
+      if (!seen.has(item.idx)) reordered.push({ ...item });
     });
 
     // 3. idx 재할당 (보이는 항목 먼저, 숨겨진 항목 뒤)

@@ -68,19 +68,21 @@ const TypeSaver = (() => {
   }
 
   function reorder(orderedIdxList) {
-    // 변이 전 스냅샷 캡처 (idx 충돌 방지)
-    const idxMap = new Map(items.map(item => [item.idx, item]));
-    const inListSet = new Set(orderedIdxList);
+    // Map으로 캡처 (복사본 사용 — 참조 공유로 인한 중복·데이터 손실 방지)
+    const idxMap = new Map(items.map(item => [item.idx, { ...item }]));
+    const seen = new Set();
 
     const reordered = [];
     // 1. 드래그 순서대로 보이는 항목 추가
     orderedIdxList.forEach(oldIdx => {
+      if (seen.has(oldIdx)) return;          // stale DOM 중복 idx 방어
+      seen.add(oldIdx);
       const item = idxMap.get(oldIdx);
       if (item) reordered.push(item);
     });
     // 2. 필터로 숨겨진 항목 보존 (삭제 방지)
     items.forEach(item => {
-      if (!inListSet.has(item.idx)) reordered.push(item);
+      if (!seen.has(item.idx)) reordered.push({ ...item });
     });
     // 3. idx 재할당 (변이는 탐색 완료 후에만 수행)
     reordered.forEach((item, i) => { item.idx = i + 1; });
