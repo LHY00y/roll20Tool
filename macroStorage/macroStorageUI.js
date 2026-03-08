@@ -11,6 +11,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let selectedTags = [];
 
+  // ── 체크 상태 세션 유지 ──
+  const CHECKED_SESSION_KEY = 'macro_checked_idxs';
+
+  function saveCheckedState() {
+    const idxs = MacroStorage.getAll().filter(i => i.checked).map(i => i.idx);
+    sessionStorage.setItem(CHECKED_SESSION_KEY, JSON.stringify(idxs));
+  }
+
+  function restoreCheckedState() {
+    try {
+      const raw = sessionStorage.getItem(CHECKED_SESSION_KEY);
+      if (!raw) return;
+      const idxs = JSON.parse(raw);
+      idxs.forEach(idx => MacroStorage.update(idx, { checked: true }));
+    } catch {}
+  }
+
   const tagFilter = setupTagFilter({
     filterEl: msTagFilter,
     btnClass: 'ms-tag-btn',
@@ -108,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (checkbox) {
       e.stopPropagation();
       MacroStorage.update(Number(checkbox.dataset.idx), { checked: checkbox.checked });
+      saveCheckedState();
       updateRoll20Btn();
       return;
     }
@@ -134,6 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const chk = li.querySelector('.ms-item__check input[type="checkbox"]');
       if (chk && !chk.checked) { chk.checked = true; MacroStorage.update(idx, { checked: true }); }
     });
+    saveCheckedState();
     updateRoll20Btn();
   });
 
@@ -142,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (item.checked) MacroStorage.update(item.idx, { checked: false });
     });
     msList.querySelectorAll('.ms-item__check input:checked').forEach(chk => { chk.checked = false; });
+    saveCheckedState();
     updateRoll20Btn();
   });
 
@@ -183,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── 초기 렌더링 ──
   MacroStorage.load().then(() => {
+    restoreCheckedState();
     whale.storage.sync.get('macro_show_memo', (result) => {
       memoToggle.set(!!result['macro_show_memo']);
       tagFilter.render();

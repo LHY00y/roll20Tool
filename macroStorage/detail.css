@@ -12,6 +12,18 @@ body {
   height: 100vh;
 }
 
+input,
+textarea {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+  font-weight: 400;
+}
+
 .ms-detail {
   display: flex;
   flex-direction: column;
@@ -34,7 +46,7 @@ body {
   height: 32px;
   border: none;
   background: none;
-  color: #666;
+  color: var(--color-text);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -45,12 +57,11 @@ body {
 }
 
 .ms-detail__back:hover {
-  background-color: #f0f0f0;
-  color: #333;
+  color: var(--color-primary);
 }
 
 .ms-detail__delete:hover {
-  background-color: #fce8e6;
+  background-color: color-mix(in srgb, #d93025 20%, transparent);
   color: #d93025;
 }
 
@@ -73,12 +84,17 @@ body {
 .ms-detail__label {
   font-size: 12px;
   font-weight: 500;
-  color: #666;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
   margin-top: 8px;
 }
 
 .ms-detail__label:first-child {
   margin-top: 0;
+}
+
+textarea {
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 .ms-detail__input {
@@ -87,9 +103,10 @@ body {
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 13px;
-  color: #333;
   outline: none;
   transition: border-color 0.15s;
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 .ms-detail__input:focus {
@@ -103,7 +120,6 @@ body {
   border-radius: 6px;
   font-size: 13px;
   font-family: inherit;
-  color: #333;
   outline: none;
   resize: vertical;
   min-height: 120px;
@@ -127,6 +143,8 @@ body {
   cursor: text;
   transition: border-color 0.15s;
   min-height: 36px;
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 .tag-input-wrap:focus-within {
@@ -139,7 +157,7 @@ body {
   gap: 2px;
   font-size: 12px;
   color: var(--color-primary);
-  background-color: var(--color-primary-light);
+  background-color: color-mix(in srgb, var(--color-primary) 60%, transparent);
   padding: 2px 6px;
   border-radius: 4px;
   white-space: nowrap;
@@ -168,7 +186,8 @@ body {
   flex: 1;
   min-width: 80px;
   padding: 2px 0;
-  color: #333;
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 /* ── 태그 자동완성 ── */
@@ -212,7 +231,8 @@ body {
   gap: 10px;
   margin-top: 12px;
   padding: 12px;
-  background-color: #f8f9fa;
+  background-color: var(--color-bg);
+  color: var(--color-text);
   border-radius: 8px;
 }
 
@@ -225,7 +245,7 @@ body {
 
 .ms-detail__option-label {
   font-size: 13px;
-  color: #444;
+  color: var(--color-text);
 }
 
 /* 토글 스위치 */

@@ -189,10 +189,19 @@ const CalendarIcal = (() => {
     const calendarName = ICalParser.getCalendarName(text) || sub.name;
     let events = ICalParser.parse(text);
 
-    // 다일 이벤트 확장
+    // 반복/다일 이벤트 확장 (현재 기준 ±1~2년 윈도우)
+    const now = new Date();
+    const windowStart = new Date(now.getFullYear() - 1, 0, 1);   // 1년 전 1월 1일
+    const windowEnd = new Date(now.getFullYear() + 2, 11, 31); // 2년 후 12월 31일
+
     let expanded = [];
     events.forEach(evt => {
-      expanded = expanded.concat(ICalParser.expandMultiDay(evt));
+      const occurrences = evt.rrule
+        ? ICalParser.expandRecurring(evt, windowStart, windowEnd)
+        : [evt];
+      occurrences.forEach(occ => {
+        expanded = expanded.concat(ICalParser.expandMultiDay(occ));
+      });
     });
 
     setCache(subId, expanded, calendarName);
@@ -226,13 +235,19 @@ const CalendarIcal = (() => {
     for (const sub of activeSubs) {
       try {
         const events = await getEvents(sub.id);
-        events.filter(e => e.dtstart && e.dtstart.date === dateStr).forEach(evt => {
-          results.push({ ...evt, subId: sub.id, subName: sub.name, subColor: sub.color });
-        });
+        for (const evt of events) {
+          if (evt.dtstart && evt.dtstart.date === dateStr) {
+            results.push({ ...evt, subId: sub.id, subName: sub.name, subColor: sub.color });
+          }
+        }
+        // events.filter(e => e.dtstart && e.dtstart.date === dateStr).forEach(evt => {
+        //   results.push({ ...evt, subId: sub.id, subName: sub.name, subColor: sub.color });
+        // });
       } catch (e) {
         console.warn(`iCal fetch 실패 (${sub.name}):`, e);
       }
     }
+
 
     return results;
   }

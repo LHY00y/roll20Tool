@@ -12,6 +12,18 @@ body {
   height: 100vh;
 }
 
+input,
+textarea {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+  font-weight: 400;
+}
+
 .hidden {
   display: none !important;
 }
@@ -38,7 +50,7 @@ body {
   height: 32px;
   border: none;
   background: none;
-  color: #666;
+  color: var(--color-text);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -49,12 +61,11 @@ body {
 }
 
 .detail__back:hover {
-  background-color: #f0f0f0;
-  color: #333;
+  color: var(--color-primary);
 }
 
 .detail__delete:hover {
-  background-color: #fce8e6;
+  background-color: color-mix(in srgb, #d93025 20%, transparent);
   color: #d93025;
 }
 
@@ -75,7 +86,7 @@ body {
   display: block;
   font-size: 12px;
   font-weight: 600;
-  color: #555;
+  color: color-mix(in srgb, var(--color-text) 80%, transparent);
   margin-bottom: 6px;
 }
 
@@ -83,6 +94,11 @@ body {
   font-weight: 400;
   color: #999;
   font-size: 11px;
+}
+
+textarea {
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 .form-input {
@@ -94,6 +110,8 @@ body {
   outline: none;
   margin-bottom: 16px;
   transition: border-color 0.2s;
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 .form-input:focus {
@@ -128,7 +146,7 @@ body {
   gap: 4px;
   font-size: 12px;
   color: var(--color-primary);
-  background-color: var(--color-primary-light);
+  background-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
   padding: 3px 8px;
   border-radius: 12px;
   white-space: nowrap;
@@ -157,6 +175,8 @@ body {
   font-size: 13px;
   padding: 2px 0;
   font-family: inherit;
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 /* ── 태그 자동완성 ── */
@@ -286,14 +306,14 @@ body {
 
 .preview-box {
   padding: 12px;
-  border: 1px solid #e0e0e0;
+  border: color-mix(in srgb, var(--color-text) 50%, transparent);
   border-radius: 6px;
-  background-color: #fafafa;
+  background-color: color-mix(in srgb, var(--color-text) 10%, transparent);
   font-size: 14px;
   line-height: 1.6;
   word-break: break-word;
   min-height: 60px;
-  color: #444;
+  color: var(--color-text);
 }
 
 /* Markdown styles */

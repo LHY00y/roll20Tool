@@ -1,3 +1,21 @@
+// Array/String.prototype.at 폴리필 (marked v15 호환성)
+if (!Array.prototype.at) {
+  Array.prototype.at = function(n) {
+    n = Math.trunc(n) || 0;
+    if (n < 0) n += this.length;
+    if (n < 0 || n >= this.length) return undefined;
+    return this[n];
+  };
+}
+if (!String.prototype.at) {
+  String.prototype.at = function(n) {
+    n = Math.trunc(n) || 0;
+    if (n < 0) n += this.length;
+    if (n < 0 || n >= this.length) return undefined;
+    return this[n];
+  };
+}
+
 const ThemeManager = (() => {
   const STORAGE_KEY = 'sidebar_theme';
   const DEFAULTS = { text: '#333333', bg: '#ffffff', primary: '#fbeb98', primaryText: '#333333' };

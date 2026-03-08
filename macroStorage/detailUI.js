@@ -92,9 +92,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   tagInputWrap.addEventListener('click', () => tagInput.focus());
 
+  // ── 제목 입력 시 공백 → 하이픈 치환 ──
+  inputTitle.addEventListener('input', () => {
+    const sel = inputTitle.selectionStart;
+    const replaced = inputTitle.value.replace(/ /g, '-');
+    if (replaced !== inputTitle.value) {
+      inputTitle.value = replaced;
+      inputTitle.setSelectionRange(sel, sel);
+    }
+  });
+
   // ── 저장 ──
   btnSave.addEventListener('click', () => {
-    const title = inputTitle.value.trim();
+    const title = inputTitle.value.trim().replace(/ /g, '-');
     if (!title) {
       inputTitle.focus();
       return;

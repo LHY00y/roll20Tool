@@ -17,7 +17,10 @@ const TypeSaver = (() => {
   }
 
   function save() {
-    whale.storage.sync.set({ [STORAGE_KEY]: items });
+    const toSave = items.map(item => ({ ...item }));
+    return new Promise(resolve => {
+      whale.storage.sync.set({ [STORAGE_KEY]: toSave }, resolve);
+    });
   }
 
   function nextIdx() {
@@ -42,42 +45,48 @@ const TypeSaver = (() => {
       bookmark: false
     };
     items.push(item);
-    save();
-    return item;
+    return save();
   }
 
   function update(idx, data) {
     const item = items.find(i => i.idx === idx);
-    if (!item) return null;
+    if (!item) return Promise.resolve(null);
     Object.assign(item, data);
-    save();
-    return item;
+    return save();
   }
 
   function remove(idx) {
     items = items.filter(i => i.idx !== idx);
-    save();
+    return save();
   }
 
   function toggleBookmark(idx) {
     const item = items.find(i => i.idx === idx);
-    if (!item) return null;
+    if (!item) return Promise.resolve(null);
     item.bookmark = !item.bookmark;
-    save();
-    return item;
+    return save();
   }
 
   function reorder(orderedIdxList) {
+    // 변이 전 스냅샷 캡처 (idx 충돌 방지)
+    const idxMap = new Map(items.map(item => [item.idx, item]));
+    const inListSet = new Set(orderedIdxList);
+
     const reordered = [];
-    orderedIdxList.forEach((oldIdx, i) => {
-      const item = items.find(it => it.idx === oldIdx);
-      if (item) {
-        item.idx = i + 1;
-        reordered.push(item);
-      }
+    // 1. 드래그 순서대로 보이는 항목 추가
+    orderedIdxList.forEach(oldIdx => {
+      const item = idxMap.get(oldIdx);
+      if (item) reordered.push(item);
     });
+    // 2. 필터로 숨겨진 항목 보존 (삭제 방지)
+    items.forEach(item => {
+      if (!inListSet.has(item.idx)) reordered.push(item);
+    });
+    // 3. idx 재할당 (변이는 탐색 완료 후에만 수행)
+    reordered.forEach((item, i) => { item.idx = i + 1; });
+
     items = reordered;
-    save();
+    return save();
   }
 
   function search(keyword) {

@@ -156,7 +156,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    previewBox.innerHTML = marked.parse(text);
+    try {
+      previewBox.innerHTML = marked.parse(text);
+    } catch {
+      previewBox.textContent = text;
+    }
   }
 
   function escapeHtml(str) {
@@ -195,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // 저장
-  btnSave.addEventListener('click', () => {
+  btnSave.addEventListener('click', async () => {
     const title = inputTitle.value.trim();
     const content = inputContent.value.trim();
 
@@ -206,19 +210,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const tag = tags.join(',');
 
+    // storage write 완료 후 이동 (완료 전 이동 시 reorder 정보 유실 방지)
     if (isEdit) {
-      TypeSaver.update(editIdx, { title, content, tag });
+      await TypeSaver.update(editIdx, { title, content, tag });
     } else {
-      TypeSaver.add(title, content, tag);
+      await TypeSaver.add(title, content, tag);
     }
 
     window.location.href = 'index.html';
   });
 
   // 삭제
-  btnDelete.addEventListener('click', () => {
+  btnDelete.addEventListener('click', async () => {
     if (confirm('이 상용구를 삭제하시겠습니까?')) {
-      TypeSaver.remove(editIdx);
+      await TypeSaver.remove(editIdx);
       window.location.href = 'index.html';
     }
   });

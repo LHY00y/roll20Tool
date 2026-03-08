@@ -49,6 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedDate = null;
   let editingEventId = null;
   let icalDetailContext = null; // {subId, eventUid}
+  let tpSync = null; // 타임피커 sync 함수
+  let dpSync = null; // 데이트피커 sync 함수
 
 
   // ══════════════════════════════════
@@ -234,6 +236,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const annot = CalendarIcal.getAnnotation(evt.subId, evt.uid);
       const urlIcon = (annot && annot.url) ? '<span class="evt-item__url-icon" title="URL 연결됨">🔗</span>' : '';
+      const desc = (evt.description || '').trim();
+      const isBoilerplate = /^this is an event reminder$/i.test(desc);
+      const descHtml = (desc && !isBoilerplate)
+        ? `<div class="evt-item__desc">${escapeHtml(desc).replace(/\n/g, '<br>')}</div>` : '';
+      const memoHtml = (annot && annot.memo)
+        ? `<div class="evt-item__memo">${escapeHtml(annot.memo)}</div>` : '';
 
       li.innerHTML = `
         <span class="evt-item__dot" style="background-color:${evt.subColor};"></span>
@@ -243,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="evt-item__name">${escapeHtml(evt.summary)}</span>
             ${urlIcon}
           </div>
-          ${annot && annot.memo ? `<div class="evt-item__memo">${escapeHtml(annot.memo)}</div>` : ''}
+          ${descHtml}${memoHtml}
         </div>
       `;
 
@@ -261,7 +269,9 @@ document.addEventListener('DOMContentLoaded', () => {
     evtFormTitle.textContent = '일정 추가';
     evtName.value = '';
     evtDate.value = dateStr;
+    if (dpSync) dpSync();
     evtTime.value = '';
+    if (tpSync) tpSync();
     evtMemo.value = '';
     evtUrl.value = '';
     evtNotify.checked = true;
@@ -278,7 +288,9 @@ document.addEventListener('DOMContentLoaded', () => {
     evtFormTitle.textContent = '일정 수정';
     evtName.value = evt.name || '';
     evtDate.value = evt.date || '';
+    if (dpSync) dpSync();
     evtTime.value = evt.time || '';
+    if (tpSync) tpSync();
     evtMemo.value = evt.memo || '';
     evtUrl.value = evt.url || '';
     evtNotify.checked = evt.notify !== false;
@@ -290,6 +302,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function closeForm() {
     evtFormOverlay.style.display = 'none';
     editingEventId = null;
+    const tpPanelEl = document.getElementById('tpPanel');
+    if (tpPanelEl) tpPanelEl.classList.remove('tp__panel--open');
+    const dpPanelEl = document.getElementById('dpPanel');
+    if (dpPanelEl) dpPanelEl.classList.remove('dp__panel--open');
   }
 
   function saveEvent() {
@@ -572,10 +588,454 @@ document.addEventListener('DOMContentLoaded', () => {
     return div.innerHTML;
   }
 
+  // ══════════════════════════════════
+  //  12h 타임 피커
+  // ══════════════════════════════════
+  function initTimePicker() {
+    const tpPanel  = document.getElementById('tpPanel');
+    const tpToggle = document.getElementById('tpToggle');
+    const tpHr     = document.getElementById('tpHr');
+    const tpMi     = document.getElementById('tpMi');
+    const tpHrCol  = document.getElementById('tpHrCol');
+    const tpMiCol  = document.getElementById('tpMiCol');
+    const tpAmBtn  = document.getElementById('tpAm');
+    const tpPmBtn  = document.getElementById('tpPm');
+    const tpNowBtn = document.getElementById('tpNow');
+    const tpClrBtn = document.getElementById('tpClr');
+    const tpWrap   = document.getElementById('tp');
+
+    let h12 = 12, min = 0, ap = 'AM';
+
+    // 내부 12h → 24h 문자열
+    function to24() {
+      let h = h12;
+      if (ap === 'AM') { if (h === 12) h = 0; }
+      else { if (h !== 12) h += 12; }
+      return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+    }
+
+    // 24h 문자열 → 내부 12h 상태
+    function from24(val) {
+      if (!val) { h12 = 12; min = 0; ap = 'AM'; return; }
+      const m = val.match(/^(\d{1,2}):(\d{2})$/);
+      if (!m) return;
+      const h = parseInt(m[1]), mi = parseInt(m[2]);
+      if (isNaN(h) || isNaN(mi)) return;
+      ap = h >= 12 ? 'PM' : 'AM';
+      h12 = h % 12 || 12;
+      min = mi;
+    }
+
+    // UI 갱신
+    function render() {
+      tpHr.value = String(h12);
+      tpMi.value = String(min).padStart(2, '0');
+      tpAmBtn.classList.toggle('tp__ap--on', ap === 'AM');
+      tpPmBtn.classList.toggle('tp__ap--on', ap === 'PM');
+    }
+
+    // evtTime 값 반영
+    function commit() {
+      evtTime.value = to24();
+    }
+
+    // ── 패널 열기/닫기 ──
+    function openPanel() {
+      if (tpPanel.classList.contains('tp__panel--open')) return;
+      if (!evtTime.value) {
+        const now = new Date();
+        h12 = now.getHours() % 12 || 12;
+        min = now.getMinutes();
+        ap  = now.getHours() >= 12 ? 'PM' : 'AM';
+      } else {
+        from24(evtTime.value);
+      }
+      render();
+      tpPanel.classList.add('tp__panel--open');
+    }
+
+    function closePanel() {
+      tpPanel.classList.remove('tp__panel--open');
+      tpHrCol.classList.remove('tp__col--focus');
+      tpMiCol.classList.remove('tp__col--focus');
+    }
+
+    // 외부에서 evtTime.value 설정 후 호출
+    function sync() {
+      if (evtTime.value) from24(evtTime.value);
+      else { h12 = 12; min = 0; ap = 'AM'; }
+      render();
+      closePanel();
+    }
+
+    // ── 패널 토글 이벤트 ──
+    evtTime.addEventListener('click', openPanel);
+    evtTime.addEventListener('focus', openPanel);
+
+    tpToggle.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      if (tpPanel.classList.contains('tp__panel--open')) closePanel();
+      else openPanel();
+    });
+
+    // 바깥 클릭 → 닫기
+    document.addEventListener('mousedown', (e) => {
+      if (tpWrap && !tpWrap.contains(e.target)) closePanel();
+    });
+
+    // 포커스가 tp 밖으로 이동 → 닫기 (Tab 키 등)
+    tpWrap.addEventListener('focusout', () => {
+      requestAnimationFrame(() => {
+        if (!tpWrap.contains(document.activeElement)) closePanel();
+      });
+    });
+
+    // ── 시 입력 ──
+    tpHr.addEventListener('focus', () => {
+      tpHrCol.classList.add('tp__col--focus');
+      tpMiCol.classList.remove('tp__col--focus');
+      setTimeout(() => tpHr.select(), 0);
+    });
+
+    tpHr.addEventListener('input', () => {
+      const v = tpHr.value.replace(/\D/g, '');
+      tpHr.value = v;
+      const n = parseInt(v);
+      if (n >= 1 && n <= 12) { h12 = n; commit(); }
+      // 13~24 입력 시 PM 자동 전환
+      if (n >= 13 && n <= 23) {
+        ap = 'PM'; h12 = n - 12; commit(); render();
+        tpMi.focus(); return;
+      }
+      if (n === 0 || n === 24) {
+        ap = 'AM'; h12 = 12; commit(); render();
+        tpMi.focus(); return;
+      }
+      if (v.length >= 2) tpMi.focus();
+    });
+
+    tpHr.addEventListener('blur', () => {
+      let v = parseInt(tpHr.value) || 12;
+      if (v < 1 || v > 12) v = 12;
+      h12 = v;
+      tpHr.value = String(v);
+      commit();
+    });
+
+    tpHr.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp')   { e.preventDefault(); adjHour(1); }
+      if (e.key === 'ArrowDown') { e.preventDefault(); adjHour(-1); }
+      if (e.key === 'Enter')     { e.preventDefault(); closePanel(); evtTime.focus(); }
+      if (e.key === 'Tab' && !e.shiftKey) { e.preventDefault(); tpMi.focus(); }
+    });
+
+    tpHr.addEventListener('wheel', (e) => { e.preventDefault(); adjHour(e.deltaY < 0 ? 1 : -1); }, { passive: false });
+
+    // ── 분 입력 ──
+    tpMi.addEventListener('focus', () => {
+      tpMiCol.classList.add('tp__col--focus');
+      tpHrCol.classList.remove('tp__col--focus');
+      setTimeout(() => tpMi.select(), 0);
+    });
+
+    tpMi.addEventListener('input', () => {
+      const v = tpMi.value.replace(/\D/g, '');
+      tpMi.value = v;
+      const n = parseInt(v);
+      if (!isNaN(n) && n >= 0 && n <= 59) { min = n; commit(); }
+    });
+
+    tpMi.addEventListener('blur', () => {
+      let v = parseInt(tpMi.value);
+      if (isNaN(v) || v < 0) v = 0;
+      if (v > 59) v = 59;
+      min = v;
+      tpMi.value = String(v).padStart(2, '0');
+      commit();
+    });
+
+    tpMi.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp')   { e.preventDefault(); adjMin(1); }
+      if (e.key === 'ArrowDown') { e.preventDefault(); adjMin(-1); }
+      if (e.key === 'Enter')     { e.preventDefault(); closePanel(); evtTime.focus(); }
+      if (e.key === 'Tab' && e.shiftKey) { e.preventDefault(); tpHr.focus(); }
+    });
+
+    tpMi.addEventListener('wheel', (e) => { e.preventDefault(); adjMin(e.deltaY < 0 ? 1 : -1); }, { passive: false });
+
+    // ── 화살표 ──
+    function adjHour(d) {
+      h12 = (h12 - 1 + d + 12) % 12 + 1;
+      tpHr.value = String(h12);
+      render(); commit();
+    }
+
+    function adjMin(d) {
+      min = (min + d + 60) % 60;
+      tpMi.value = String(min).padStart(2, '0');
+      render(); commit();
+    }
+
+    document.getElementById('tpHrUp').addEventListener('click', () => { adjHour(1); tpHr.focus(); });
+    document.getElementById('tpHrDn').addEventListener('click', () => { adjHour(-1); tpHr.focus(); });
+    document.getElementById('tpMiUp').addEventListener('click', () => { adjMin(1); tpMi.focus(); });
+    document.getElementById('tpMiDn').addEventListener('click', () => { adjMin(-1); tpMi.focus(); });
+
+    // ── AM / PM ──
+    tpAmBtn.addEventListener('click', () => { ap = 'AM'; render(); commit(); });
+    tpPmBtn.addEventListener('click', () => { ap = 'PM'; render(); commit(); });
+
+    // ── Now / Clear ──
+    tpNowBtn.addEventListener('click', () => {
+      const now = new Date();
+      h12 = now.getHours() % 12 || 12;
+      min = now.getMinutes();
+      ap  = now.getHours() >= 12 ? 'PM' : 'AM';
+      render(); commit();
+    });
+
+    tpClrBtn.addEventListener('click', () => {
+      h12 = 12; min = 0; ap = 'AM';
+      evtTime.value = '';
+      render(); closePanel();
+    });
+
+    // ── 직접 타이핑 (HH:MM) ──
+    evtTime.addEventListener('input', () => {
+      const val = evtTime.value;
+      // 완전한 HH:MM 패턴
+      if (/^\d{1,2}:\d{2}$/.test(val)) {
+        const [hStr, mStr] = val.split(':');
+        let hh = parseInt(hStr), mm = parseInt(mStr);
+        if (mm > 59) return;
+        if (hh >= 13 && hh <= 23) {
+          ap = 'PM'; h12 = hh - 12; min = mm;
+        } else if (hh === 0 || hh === 24) {
+          ap = 'AM'; h12 = 12; min = mm;
+          evtTime.value = '00:' + String(mm).padStart(2, '0');
+        } else {
+          from24(String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0'));
+        }
+        render();
+      }
+      if (!val) { h12 = 12; min = 0; ap = 'AM'; render(); }
+    });
+
+    // 초기 렌더링
+    render();
+    return sync;
+  }
+
+
+  // ══════════════════════════════════
+  //  날짜 선택기 (Date Picker)
+  // ══════════════════════════════════
+  function initDatePicker() {
+    const dpPanel    = document.getElementById('dpPanel');
+    const dpToggle   = document.getElementById('dpToggle');
+    const dpNavTitle = document.getElementById('dpNavTitle');
+    const dpGrid     = document.getElementById('dpGrid');
+    const dpPrevBtn  = document.getElementById('dpPrev');
+    const dpNextBtn  = document.getElementById('dpNext');
+    const dpTodayBtn = document.getElementById('dpToday');
+    const dpClrBtn   = document.getElementById('dpClr');
+    const dpWrap     = document.getElementById('dp');
+
+    let viewYear, viewMonth;
+
+    // 현재 evtDate 값에서 viewYear/viewMonth 초기화
+    function initView() {
+      const val = evtDate.value;
+      if (val && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
+        const parts = val.split('-').map(Number);
+        viewYear  = parts[0];
+        viewMonth = parts[1] - 1;
+      } else {
+        const now = new Date();
+        viewYear  = now.getFullYear();
+        viewMonth = now.getMonth();
+      }
+    }
+
+    function formatDate(y, m, d) {
+      return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    }
+
+    function renderGrid() {
+      dpNavTitle.textContent = `${viewYear}년 ${viewMonth + 1}월`;
+      dpGrid.innerHTML = '';
+
+      const firstDay  = new Date(viewYear, viewMonth, 1).getDay();
+      const lastDate  = new Date(viewYear, viewMonth + 1, 0).getDate();
+      const prevLast  = new Date(viewYear, viewMonth, 0).getDate();
+
+      const todayNow = new Date();
+      const todayStr = formatDate(todayNow.getFullYear(), todayNow.getMonth(), todayNow.getDate());
+      const selStr   = evtDate.value;
+
+      const cells = [];
+
+      // 이전달 채우기
+      for (let i = firstDay - 1; i >= 0; i--) {
+        const d = prevLast - i;
+        const pm = viewMonth - 1;
+        const py = pm < 0 ? viewYear - 1 : viewYear;
+        const rm = pm < 0 ? 11 : pm;
+        cells.push({ day: d, dateStr: formatDate(py, rm, d), other: true });
+      }
+
+      // 이번달
+      for (let d = 1; d <= lastDate; d++) {
+        cells.push({ day: d, dateStr: formatDate(viewYear, viewMonth, d), other: false });
+      }
+
+      // 다음달 채우기
+      const remain = 7 - (cells.length % 7);
+      if (remain < 7) {
+        for (let d = 1; d <= remain; d++) {
+          const nm = viewMonth + 1;
+          const ny = nm > 11 ? viewYear + 1 : viewYear;
+          const rm = nm > 11 ? 0 : nm;
+          cells.push({ day: d, dateStr: formatDate(ny, rm, d), other: true });
+        }
+      }
+
+      cells.forEach((cell, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'dp__cell';
+        btn.textContent = cell.day;
+
+        const col = idx % 7;
+        if (cell.other)            btn.classList.add('dp__cell--other');
+        if (col === 0)             btn.classList.add('dp__cell--sun');
+        if (col === 6)             btn.classList.add('dp__cell--sat');
+        if (cell.dateStr === todayStr) btn.classList.add('dp__cell--today');
+        if (cell.dateStr === selStr)   btn.classList.add('dp__cell--selected');
+
+        btn.addEventListener('click', () => {
+          evtDate.value = cell.dateStr;
+          closePanel();
+        });
+
+        dpGrid.appendChild(btn);
+      });
+    }
+
+    // ── 패널 열기/닫기 ──
+    function openPanel() {
+      if (dpPanel.classList.contains('dp__panel--open')) return;
+      initView();
+      renderGrid();
+      dpPanel.classList.add('dp__panel--open');
+    }
+
+    function closePanel() {
+      dpPanel.classList.remove('dp__panel--open');
+    }
+
+    // 외부에서 evtDate.value 설정 후 호출
+    function sync() {
+      initView();
+      closePanel();
+    }
+
+    // ── 패널 토글 이벤트 ──
+    evtDate.addEventListener('click', openPanel);
+    evtDate.addEventListener('focus', openPanel);
+
+    dpToggle.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      if (dpPanel.classList.contains('dp__panel--open')) closePanel();
+      else openPanel();
+    });
+
+    // 바깥 클릭 → 닫기
+    document.addEventListener('mousedown', (e) => {
+      if (dpWrap && !dpWrap.contains(e.target)) closePanel();
+    });
+
+    // 포커스가 dp 밖으로 이동 → 닫기
+    dpWrap.addEventListener('focusout', () => {
+      requestAnimationFrame(() => {
+        if (!dpWrap.contains(document.activeElement)) closePanel();
+      });
+    });
+
+    // ── 네비게이션 ──
+    dpPrevBtn.addEventListener('click', () => {
+      viewMonth--;
+      if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+      renderGrid();
+    });
+
+    dpNextBtn.addEventListener('click', () => {
+      viewMonth++;
+      if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+      renderGrid();
+    });
+
+    // ── Today / Clear ──
+    dpTodayBtn.addEventListener('click', () => {
+      const now = new Date();
+      evtDate.value = formatDate(now.getFullYear(), now.getMonth(), now.getDate());
+      viewYear  = now.getFullYear();
+      viewMonth = now.getMonth();
+      renderGrid();
+      closePanel();
+    });
+
+    dpClrBtn.addEventListener('click', () => {
+      evtDate.value = '';
+      closePanel();
+    });
+
+    // ── 직접 타이핑 (YYYY-MM-DD) ──
+    evtDate.addEventListener('input', () => {
+      let v = evtDate.value;
+      // 숫자와 하이픈만 허용
+      v = v.replace(/[^\d-]/g, '');
+
+      // 자동 하이픈 삽입: 4자리 입력 후 → "YYYY-", 7자리 후 → "YYYY-MM-"
+      const digits = v.replace(/-/g, '');
+      if (digits.length >= 4 && v.indexOf('-') === -1) {
+        v = digits.slice(0, 4) + '-' + digits.slice(4);
+      }
+      if (digits.length >= 6 && v.lastIndexOf('-') <= 4) {
+        v = digits.slice(0, 4) + '-' + digits.slice(4, 6) + '-' + digits.slice(6);
+      }
+      evtDate.value = v;
+
+      // 완전한 날짜면 뷰 업데이트
+      if (/^\d{4}-\d{2}-\d{2}$/.test(v)) {
+        const [y, m, d] = v.split('-').map(Number);
+        if (m >= 1 && m <= 12 && d >= 1 && d <= 31) {
+          viewYear  = y;
+          viewMonth = m - 1;
+          if (dpPanel.classList.contains('dp__panel--open')) renderGrid();
+        }
+      }
+    });
+
+    // 키보드 Enter → 패널 열려있으면 닫기 (닫혀있으면 saveEvent 진행)
+    evtDate.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && dpPanel.classList.contains('dp__panel--open')) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        closePanel();
+      }
+    });
+
+    return sync;
+  }
+
+
   // 초기 렌더링
   Promise.all([CalendarEvents.init(), CalendarIcal.init(), loadSettings()]).then(async () => {
     const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     selectedDate = todayStr;
+    tpSync = initTimePicker();
+    dpSync = initDatePicker();
     await render();
     showEventsPanel(todayStr);
   });

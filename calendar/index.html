@@ -16,7 +16,12 @@
       <button class="cal__btn" id="btnNext">›</button>
       <button class="cal__btn cal__btn--today" id="btnToday">오늘</button>
       <button class="cal__btn cal__btn--subs" id="btnSubs" title="캘린더 구독 관리">
-        <img src="../assets/settings.svg" width="14" height="14">
+        <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M17.5 3h.75A2.755 2.755 0 0 1 21 5.75v12.5A2.755 2.755 0 0 1 18.25 21H5.75A2.755 2.755 0 0 1 3 18.25V5.75A2.755 2.755 0 0 1 5.75 3h.75V2H8v1h8V2h1.5v1Zm-11 1.5h-.75c-.69 0-1.25.56-1.25 1.25v1.745h15V5.75c0-.69-.56-1.25-1.25-1.25h-.75V6H16V4.5H8V6H6.5V4.5Zm-.75 15h12.5c.69 0 1.25-.56 1.25-1.25V8.995h-15v9.255c0 .69.56 1.25 1.25 1.25Zm5.5-9h1.5v2.75h2.75v1.5h-2.75v2.75h-1.5v-2.75H8.5v-1.5h2.75V10.5Z"
+            fill="currentColor" />
+        </svg>
+        <!-- <img src="../assets/settings.svg" width="14" height="14"> -->
       </button>
     </div>
 
@@ -82,17 +87,87 @@
         <input type="text" class="evt-form__input" id="evtName" placeholder="일정 이름">
 
         <label class="evt-form__label">일자</label>
-        <input type="date" class="evt-form__input" id="evtDate">
+        <div class="dp" id="dp">
+          <div class="dp__field">
+            <input type="text" class="evt-form__input dp__input" id="evtDate" placeholder="YYYY-MM-DD"
+              autocomplete="off" maxlength="10">
+            <button class="dp__toggle" id="dpToggle" type="button" tabindex="-1">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+            </button>
+          </div>
+          <div class="dp__panel" id="dpPanel">
+            <div class="dp__nav">
+              <button class="dp__nav-btn" id="dpPrev" type="button">‹</button>
+              <span class="dp__nav-title" id="dpNavTitle"></span>
+              <button class="dp__nav-btn" id="dpNext" type="button">›</button>
+            </div>
+            <div class="dp__weekdays">
+              <span class="dp__wk dp__wk--sun">일</span>
+              <span class="dp__wk">월</span>
+              <span class="dp__wk">화</span>
+              <span class="dp__wk">수</span>
+              <span class="dp__wk">목</span>
+              <span class="dp__wk">금</span>
+              <span class="dp__wk dp__wk--sat">토</span>
+            </div>
+            <div class="dp__grid" id="dpGrid"></div>
+            <div class="dp__foot">
+              <button class="dp__foot-btn dp__foot-btn--today" id="dpToday" type="button">오늘</button>
+              <button class="dp__foot-btn dp__foot-btn--clr" id="dpClr" type="button">초기화</button>
+            </div>
+          </div>
+        </div>
 
         <label class="evt-form__label">시간</label>
-        <input type="time" class="evt-form__input" id="evtTime">
+        <div class="tp" id="tp">
+          <div class="tp__field">
+            <input type="text" class="evt-form__input tp__input" id="evtTime" placeholder="HH:MM" autocomplete="off"
+              inputmode="numeric" maxlength="5">
+            <button class="tp__toggle" id="tpToggle" type="button" tabindex="-1">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </button>
+          </div>
+          <div class="tp__panel" id="tpPanel">
+            <div class="tp__row">
+              <div class="tp__col" id="tpHrCol">
+                <button class="tp__arr" id="tpHrUp" type="button">▲</button>
+                <input class="tp__num" id="tpHr" type="text" maxlength="2" inputmode="numeric">
+                <button class="tp__arr" id="tpHrDn" type="button">▼</button>
+              </div>
+              <div class="tp__colon">:</div>
+              <div class="tp__col" id="tpMiCol">
+                <button class="tp__arr" id="tpMiUp" type="button">▲</button>
+                <input class="tp__num" id="tpMi" type="text" maxlength="2" inputmode="numeric">
+                <button class="tp__arr" id="tpMiDn" type="button">▼</button>
+              </div>
+              <div class="tp__ampm">
+                <button class="tp__ap" id="tpAm" type="button">AM</button>
+                <button class="tp__ap" id="tpPm" type="button">PM</button>
+              </div>
+            </div>
+            <div class="tp__foot">
+              <button class="tp__foot-btn tp__foot-btn--now" id="tpNow" type="button">현재시각</button>
+              <button class="tp__foot-btn tp__foot-btn--clr" id="tpClr" type="button">초기화</button>
+            </div>
+          </div>
+        </div>
 
         <label class="evt-form__label">메모</label>
         <textarea class="evt-form__textarea" id="evtMemo" rows="3" placeholder="메모"></textarea>
 
         <label class="evt-form__label">URL</label>
         <input type="url" class="evt-form__input" id="evtUrl" placeholder="https://...">
-        <span class="evt-form__hint">설정한 시간에 이 URL을 자동으로 엽니다.</span>
+        <span class="evt-form__hint">5분 전에 이 URL을 자동으로 엽니다.</span>
 
         <div class="evt-form__notify-row">
           <span class="evt-form__label">🔔 5분 전 알림</span>
@@ -124,7 +199,7 @@
 
         <label class="evt-form__label">URL</label>
         <input type="url" class="evt-form__input" id="icalDetailUrl" placeholder="https://...">
-        <span class="evt-form__hint">설정한 시간에 이 URL을 자동으로 엽니다.</span>
+        <span class="evt-form__hint">5분 전에 해당 URL을 자동으로 엽니다.</span>
 
         <div class="evt-form__notify-row">
           <span class="evt-form__label">🔔 5분 전 알림</span>

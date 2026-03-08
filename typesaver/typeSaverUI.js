@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const previewRow = el('div', { className: 'ts-params__preview-row' }, [
       original,
-      el('span', { className: 'ts-preview__arrow', textContent: '→' }),
+      el('span', { className: 'ts-preview__arrow', textContent: '>' }),
       result,
       copyBtn
     ]);
@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
     e.dataTransfer.effectAllowed = 'move';
   });
 
-  tsList.addEventListener('dragend', () => {
+  tsList.addEventListener('dragend', async () => {
     if (dragItem) {
       dragItem.classList.remove('dragging');
       dragItem = null;
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tsList.querySelectorAll('.ts-item').forEach(el => el.classList.remove('drag-over'));
 
     const orderedIdxList = [...tsList.querySelectorAll('.ts-item')].map(el => Number(el.dataset.idx));
-    TypeSaver.reorder(orderedIdxList);
+    await TypeSaver.reorder(orderedIdxList);
     applyFilters();
   });
 
