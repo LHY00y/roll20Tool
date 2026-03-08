@@ -251,15 +251,11 @@ whale.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'addMacrosToRoll20') {
     (async () => {
       try {
-        const allActiveTabs = await whale.tabs.query({ active: true });
-        const tab = allActiveTabs.find(t =>
-          t.url &&
-          !t.url.startsWith('chrome-extension://') &&
-          !t.url.startsWith('whale-extension://') &&
-          !t.url.startsWith('about:')
-        );
+        // Roll20 탭만 찾기
+        const roll20Tabs = await whale.tabs.query({ url: ['*://app.roll20.net/*', '*://roll20.net/*'] });
+        const tab = roll20Tabs.find(t => t.active) || roll20Tabs[0];
         if (!tab) {
-          sendResponse({ success: false, error: 'Roll20 탭을 활성화해주세요.' });
+          sendResponse({ success: false, error: 'Roll20 탭을 열어주세요.' });
           return;
         }
 
@@ -278,7 +274,7 @@ whale.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const results = await whale.scripting.executeScript({
           target: { tabId: tab.id },
           world: 'MAIN',
-          files: ['roll20Helper.js']
+          files: ['assets/js/roll20Helper.js']
         });
 
         const result = results && results[0] && results[0].result;
