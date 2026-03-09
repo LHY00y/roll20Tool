@@ -59,4 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     memoContent.scrollTop = memoContent.scrollHeight;
   }
+
+  // 언어 변경 시 i18n 재적용
+  window.addEventListener('langchange', () => {
+    I18n.applyI18n();
+  });
+
+  I18n.applyI18n();
 });

@@ -219,6 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('macroStorageFrame'),
     document.getElementById('calendarFrame'),
     document.getElementById('bookmarkFrame'),
+    document.getElementById('memoFrame'),
   ];
 
   function broadcastTheme(theme) {
@@ -227,6 +228,24 @@ document.addEventListener('DOMContentLoaded', () => {
       catch { /* iframe not loaded yet */ }
     });
   }
+
+  // ── 언어 전환 ──
+  function broadcastLang(lang) {
+    iframes.forEach(frame => {
+      try { frame.contentWindow.postMessage({ type: 'lang-update', lang }, '*'); }
+      catch { /* iframe not loaded yet */ }
+    });
+  }
+
+  const btnLang = document.getElementById('btnLang');
+  btnLang.addEventListener('click', () => {
+    const newLang = I18n.getLang() === 'ko' ? 'en' : 'ko';
+    I18n.setLang(newLang);
+    I18n.applyI18n();
+    broadcastLang(newLang);
+    // 백그라운드 서비스 워커에서 접근할 수 있도록 storage.local에도 저장
+    whale.storage.local.set({ app_lang: newLang });
+  });
 
   function applyAndSaveTheme(theme) {
     ThemeManager.apply(theme);
@@ -338,4 +357,5 @@ document.addEventListener('DOMContentLoaded', () => {
   applyTabOrder();
   applyVisibility();
   syncThemeInputs(ThemeManager.load());
+  I18n.applyI18n();
 });

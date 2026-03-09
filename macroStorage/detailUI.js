@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (editIdx) {
       const item = MacroStorage.getById(editIdx);
       if (item) {
-        headerTitle.textContent = '매크로 수정';
+        headerTitle.textContent = I18n.t('ms_edit');
         inputTitle.value = item.title || '';
         inputContent.value = item.content || '';
         inputMemo.value = item.memo || '';
@@ -138,10 +138,11 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = 'index.html';
   });
 
-  // ── 유틸 ──
-  function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-  }
+  // 언어 변경 시 동적 텍스트 갱신
+  window.addEventListener('langchange', () => {
+    I18n.applyI18n();
+    headerTitle.textContent = editIdx ? I18n.t('ms_edit') : I18n.t('ms_add');
+  });
+
+  I18n.applyI18n();
 });

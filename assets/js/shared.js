@@ -190,6 +190,13 @@ function setupTagAutocomplete({ tagInput, tagInputWrap, getExistingTags, getTags
   return { isHandling: () => dropdown.classList.contains('open') && activeIdx >= 0 };
 }
 
+// ── HTML 이스케이프 ──
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
 // ── 메모 토글 설정 ──
 function setupMemoToggle({ toggleBtn, listEl, memoClass, storageKey }) {
   let show = false;

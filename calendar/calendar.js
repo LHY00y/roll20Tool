@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
   //  달력 렌더링
   // ══════════════════════════════════
   async function render() {
-    calTitle.textContent = `${currentYear}년 ${currentMonth + 1}월`;
+    calTitle.textContent = I18n.formatCalTitle(currentYear, currentMonth);
     calBody.innerHTML = '';
 
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function showEventsPanel(dateStr) {
     evtPanel.style.display = 'block';
     const parts = dateStr.split('-');
-    evtPanelDate.textContent = `${parseInt(parts[1])}월 ${parseInt(parts[2])}일`;
+    evtPanelDate.textContent = I18n.formatCalDate(parseInt(parts[1]), parseInt(parts[2]));
 
     const manualEvents = CalendarEvents.getByDate(dateStr);
     let icalEvents = [];
@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       li.innerHTML = `
         <span class="evt-item__dot" style="background-color:${evt.subColor};"></span>
-        <span class="evt-item__time">${evt.dtstart.time || (evt.allDay ? '종일' : '')}</span>
+        <span class="evt-item__time">${evt.dtstart.time || (evt.allDay ? I18n.t('cal_all_day') : '')}</span>
         <div class="evt-item__body">
           <div class="evt-item__name-row">
             <span class="evt-item__name">${escapeHtml(evt.summary)}</span>
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ══════════════════════════════════
   function openFormForAdd(dateStr) {
     editingEventId = null;
-    evtFormTitle.textContent = '일정 추가';
+    evtFormTitle.textContent = I18n.t('cal_evt_add');
     evtName.value = '';
     evtDate.value = dateStr;
     if (dpSync) dpSync();
@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!evt) return;
 
     editingEventId = id;
-    evtFormTitle.textContent = '일정 수정';
+    evtFormTitle.textContent = I18n.t('cal_evt_edit');
     evtName.value = evt.name || '';
     evtDate.value = evt.date || '';
     if (dpSync) dpSync();
@@ -349,13 +349,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 읽기전용 정보
     let infoHtml = '';
-    if (evt.dtstart.time) infoHtml += `<div class="ical-detail__row"><span class="ical-detail__label">시간</span><span>${evt.dtstart.time}${evt.dtend ? ' ~ ' + evt.dtend.time : ''}</span></div>`;
-    if (evt.allDay) infoHtml += `<div class="ical-detail__row"><span class="ical-detail__label">종일</span><span>종일 일정</span></div>`;
-    if (evt.location) infoHtml += `<div class="ical-detail__row"><span class="ical-detail__label">장소</span><span>${escapeHtml(evt.location)}</span></div>`;
+    if (evt.dtstart.time) infoHtml += `<div class="ical-detail__row"><span class="ical-detail__label">${I18n.t('cal_ical_time')}</span><span>${evt.dtstart.time}${evt.dtend ? ' ~ ' + evt.dtend.time : ''}</span></div>`;
+    if (evt.allDay) infoHtml += `<div class="ical-detail__row"><span class="ical-detail__label">${I18n.t('cal_ical_allday')}</span><span>${I18n.t('cal_ical_allday_val')}</span></div>`;
+    if (evt.location) infoHtml += `<div class="ical-detail__row"><span class="ical-detail__label">${I18n.t('cal_ical_location')}</span><span>${escapeHtml(evt.location)}</span></div>`;
     const desc = (evt.description || '').trim();
     const isBoilerplate = /^this is an event reminder$/i.test(desc);
-    if (desc && !isBoilerplate) infoHtml += `<div class="ical-detail__row"><span class="ical-detail__label">상세정보</span><span>${escapeHtml(desc).replace(/\n/g, '<br>')}</span></div>`;
-    infoHtml += `<div class="ical-detail__row"><span class="ical-detail__label">캘린더</span><span class="ical-detail__cal"><span class="ical-detail__cal-dot" style="background:${evt.subColor}"></span>${escapeHtml(evt.subName)}</span></div>`;
+    if (desc && !isBoilerplate) infoHtml += `<div class="ical-detail__row"><span class="ical-detail__label">${I18n.t('cal_ical_desc')}</span><span>${escapeHtml(desc).replace(/\n/g, '<br>')}</span></div>`;
+    infoHtml += `<div class="ical-detail__row"><span class="ical-detail__label">${I18n.t('cal_ical_calendar')}</span><span class="ical-detail__cal"><span class="ical-detail__cal-dot" style="background:${evt.subColor}"></span>${escapeHtml(evt.subName)}</span></div>`;
 
     icalDetailInfo.innerHTML = infoHtml;
 
@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
     subsList.innerHTML = '';
 
     if (subs.length === 0) {
-      subsList.innerHTML = '<li class="subs-empty">구독한 캘린더가 없습니다.</li>';
+      subsList.innerHTML = `<li class="subs-empty">${I18n.t('cal_subs_empty')}</li>`;
       return;
     }
 
@@ -443,16 +443,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (refreshBtn) {
       const id = Number(refreshBtn.dataset.id);
-      showSubsStatus('새로고침 중...');
+      showSubsStatus(I18n.t('cal_refreshing'));
       try {
         CalendarIcal.clearCache(id);
         await CalendarIcal.fetchAndParse(id);
-        showSubsStatus('새로고침 완료!', 'success');
+        showSubsStatus(I18n.t('cal_refreshed'), 'success');
         renderSubsList();
         render();
         if (selectedDate) showEventsPanel(selectedDate);
       } catch (err) {
-        showSubsStatus('실패: ' + err.message, 'error');
+        showSubsStatus(I18n.t('cal_fail') + err.message, 'error');
       }
     }
 
@@ -469,19 +469,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const url = subsUrlInput.value.trim();
     if (!url) { subsUrlInput.focus(); return; }
 
-    showSubsStatus('캘린더를 불러오는 중...');
+    showSubsStatus(I18n.t('cal_loading'));
     subsAddBtn.disabled = true;
 
     try {
       const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#1a73e8';
       const sub = CalendarIcal.addSub('iCal', url, primaryColor);
       await CalendarIcal.fetchAndParse(sub.id);
-      showSubsStatus('캘린더 추가 완료!', 'success');
+      showSubsStatus(I18n.t('cal_added'), 'success');
       subsUrlInput.value = '';
       renderSubsList();
       render();
     } catch (err) {
-      showSubsStatus('실패: ' + err.message, 'error');
+      showSubsStatus(I18n.t('cal_fail') + err.message, 'error');
       // 추가 실패 시 구독 제거
       const subs = CalendarIcal.getSubs();
       const last = subs[subs.length - 1];
@@ -862,7 +862,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderGrid() {
-      dpNavTitle.textContent = `${viewYear}년 ${viewMonth + 1}월`;
+      dpNavTitle.textContent = I18n.formatCalTitle(viewYear, viewMonth);
       dpGrid.innerHTML = '';
 
       const firstDay  = new Date(viewYear, viewMonth, 1).getDay();
@@ -1038,5 +1038,13 @@ document.addEventListener('DOMContentLoaded', () => {
     dpSync = initDatePicker();
     await render();
     showEventsPanel(todayStr);
+    I18n.applyI18n();
+  });
+
+  // 언어 변경 시 달력 재렌더링
+  window.addEventListener('langchange', async () => {
+    I18n.applyI18n();
+    await render();
+    if (selectedDate) showEventsPanel(selectedDate);
   });
 });

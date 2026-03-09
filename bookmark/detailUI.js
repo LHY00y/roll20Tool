@@ -5,8 +5,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const headerTitle = document.getElementById('headerTitle');
 
   const inputTitle = document.getElementById('inputTitle');
-  const inputUrl = document.getElementById('inputUrl');
   const inputMemo = document.getElementById('inputMemo');
+
+  const urlList = document.getElementById('urlList');
+  const btnAddUrl = document.getElementById('btnAddUrl');
 
   const tagInputWrap = document.getElementById('tagInputWrap');
   const tagChips = document.getElementById('tagChips');
@@ -16,20 +18,66 @@ document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(location.search);
   const editIdx = params.get('idx') ? Number(params.get('idx')) : null;
   let tags = [];
+  let urls = [''];
+
+  // ── URL 목록 렌더링 ──
+  function renderUrls() {
+    urlList.innerHTML = '';
+    urls.forEach((url, i) => {
+      const row = document.createElement('div');
+      row.className = 'bm-url-row';
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'bm-url-row__input';
+      input.value = url;
+      input.placeholder = 'https://...';
+      input.addEventListener('input', () => { urls[i] = input.value; });
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'bm-url-row__remove';
+      removeBtn.innerHTML = '×';
+      removeBtn.title = 'URL 삭제';
+      removeBtn.style.visibility = urls.length === 1 ? 'hidden' : '';
+      removeBtn.addEventListener('click', () => {
+        urls.splice(i, 1);
+        if (urls.length === 0) urls.push('');
+        renderUrls();
+      });
+
+      row.appendChild(input);
+      row.appendChild(removeBtn);
+      urlList.appendChild(row);
+    });
+
+    btnAddUrl.disabled = urls.length >= BookmarkData.MAX_URLS;
+  }
+
+  btnAddUrl.addEventListener('click', () => {
+    if (urls.length < BookmarkData.MAX_URLS) {
+      urls.push('');
+      renderUrls();
+      // 새로 추가된 입력칸에 포커스
+      const inputs = urlList.querySelectorAll('.bm-url-row__input');
+      inputs[inputs.length - 1].focus();
+    }
+  });
 
   // ── 초기화 ──
   BookmarkData.load().then(() => {
     if (editIdx) {
       const item = BookmarkData.getById(editIdx);
       if (item) {
-        headerTitle.textContent = '북마크 수정';
+        headerTitle.textContent = I18n.t('bm_edit');
         inputTitle.value = item.title || '';
-        inputUrl.value = item.url || '';
+        urls = item.urls && item.urls.length ? [...item.urls] : [''];
         inputMemo.value = item.memo || '';
         tags = item.tag ? item.tag.split(',').map(t => t.trim()).filter(t => t) : [];
         btnDelete.style.display = 'flex';
       }
     }
+    renderUrls();
     renderTags();
   });
 
@@ -96,14 +144,14 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const url = inputUrl.value.trim();
+    const urlArray = urls.map(u => u.trim()).filter(u => u);
     const memo = inputMemo.value.trim();
     const tag = tags.join(', ');
 
     if (editIdx) {
-      BookmarkData.update(editIdx, { title, url, memo, tag });
+      BookmarkData.update(editIdx, { title, urls: urlArray, memo, tag });
     } else {
-      const item = BookmarkData.add(title, url, tag, memo);
+      BookmarkData.add(title, urlArray, tag, memo);
     }
 
     window.location.href = 'index.html';
@@ -121,10 +169,11 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = 'index.html';
   });
 
-  // ── 유틸 ──
-  function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-  }
+  // 언어 변경 시 동적 텍스트 갱신
+  window.addEventListener('langchange', () => {
+    I18n.applyI18n();
+    headerTitle.textContent = editIdx ? I18n.t('bm_edit') : I18n.t('bm_add');
+  });
+
+  I18n.applyI18n();
 });

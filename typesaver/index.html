@@ -10,14 +10,17 @@
 
 <body>
   <div class="ts-toolbar">
-    <input type="text" class="ts-search" placeholder="검색...">
-    <button class="ts-btn-add" title="추가">+</button>
+    <input type="text" class="ts-search" data-i18n-placeholder="search" placeholder="검색...">
+    <button class="ts-btn-add" data-i18n-title="add" title="추가">+</button>
   </div>
   <div class="ts-tags" id="tsTagFilter"></div>
   <ul class="ts-list" id="tsList"></ul>
-  <div class="ts-empty" id="tsEmpty">저장된 상용구가 없습니다.</div>
+  <div class="ts-empty" id="tsEmpty" data-i18n="ts_empty">저장된 상용구가 없습니다.</div>
 
   <script src="../assets/js/theme.js"></script>
+  <script src="../assets/js/i18n.js"></script>
+  <script src="../assets/js/shared.js"></script>
+  <script src="../assets/js/storageData.js"></script>
   <script src="../lib/marked.min.js"></script>
   <script src="typeSaver.js"></script>
   <script src="typeSaverUI.js"></script>

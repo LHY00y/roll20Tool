@@ -76,6 +76,18 @@ async function _ensureIcalCache(subs, icalCache) {
   return updated;
 }
 
+// 알림 다국어 지원 (background 서비스워커는 localStorage 접근 불가, storage.local 사용)
+const _notifyStrings = {
+  ko: {
+    title: '📅 일정 알림',
+    message: (name, time) => `${name}\n${time} 시작 (5분 전)`
+  },
+  en: {
+    title: '📅 Event Reminder',
+    message: (name, time) => `${name}\n${time} starts (5 min before)`
+  }
+};
+
 async function checkCalendarEvents() {
   try {
     const now = new Date();
@@ -88,12 +100,14 @@ async function checkCalendarEvents() {
       'calendar_ical_subs',
       'calendar_ical_annotations'
     ]);
-    const localData = await _localGet(['calendar_ical_cache', 'cal_fired']);
+    const localData = await _localGet(['calendar_ical_cache', 'cal_fired', 'app_lang']);
 
     const urlOn = !syncData.calendar_notify_settings || syncData.calendar_notify_settings.url !== false;
     const manualEvents = syncData.calendar_events || [];
     const subs = syncData.calendar_ical_subs || [];
     const annot = syncData.calendar_ical_annotations || {};
+    const lang = localData.app_lang === 'en' ? 'en' : 'ko';
+    const ns = _notifyStrings[lang];
 
 
     // iCal 캐시 없거나 만료 시 백그라운드에서 직접 갱신
@@ -120,13 +134,12 @@ async function checkCalendarEvents() {
       whale.notifications.create(`cal_${Date.now()}`, {
         type: 'basic',
         iconUrl,
-        title: '📅 일정 알림',
-        message: `${name}\n${time} 시작 (5분 전)`,
+        title: ns.title,
+        message: ns.message(name, time),
         priority: 2
       }, (id) => {
         if (whale.runtime.lastError) {
           console.error('[Cal] notification error:', whale.runtime.lastError.message);
-        } else {
         }
       });
     }
@@ -251,11 +264,11 @@ whale.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'addMacrosToRoll20') {
     (async () => {
       try {
-        // Roll20 탭만 찾기
-        const roll20Tabs = await whale.tabs.query({ url: ['*://app.roll20.net/*', '*://roll20.net/*'] });
-        const tab = roll20Tabs.find(t => t.active) || roll20Tabs[0];
+        // 현재 활성화된 Roll20 탭만 찾기
+        const roll20Tabs = await whale.tabs.query({ url: ['*://app.roll20.net/*', '*://roll20.net/*'], active: true });
+        const tab = roll20Tabs[0];
         if (!tab) {
-          sendResponse({ success: false, error: 'Roll20 탭을 열어주세요.' });
+          sendResponse({ success: false, error: 'Roll20 탭을 활성화해주세요.' });
           return;
         }
 

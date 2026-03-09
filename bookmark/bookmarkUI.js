@@ -36,14 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const keyword = bmSearch.value.trim();
     let list;
     if (selectedTags.length > 0 && keyword) {
-      const byTag = BookmarkData.filterByTags(selectedTags);
-      const q = keyword.toLowerCase();
-      list = byTag.filter(i =>
-        i.title.toLowerCase().includes(q) ||
-        i.url.toLowerCase().includes(q) ||
-        i.tag.toLowerCase().includes(q) ||
-        (i.memo || '').toLowerCase().includes(q)
-      );
+      const tagSet = new Set(BookmarkData.filterByTags(selectedTags).map(i => i.idx));
+      list = BookmarkData.search(keyword).filter(i => tagSet.has(i.idx));
     } else if (selectedTags.length > 0) {
       list = BookmarkData.filterByTags(selectedTags);
     } else if (keyword) {
@@ -62,9 +56,13 @@ document.addEventListener('DOMContentLoaded', () => {
     bmEmpty.classList.remove('visible');
 
     list.forEach(item => {
+      const urls = item.urls || [];
+      const urlDisplay = urls[0] || '';
       const titleRow = el('div', { className: 'bm-item__title-row' }, [
-        el('span', { className: 'bm-item__title', title: item.url || '', textContent: item.title }),
-        item.url ? el('span', { className: 'bm-item__url', textContent: item.url }) : null
+        el('span', { className: 'bm-item__title', title: urls.join('\n'), textContent: item.title }),
+        urlDisplay ? el('span', { className: 'bm-item__url', textContent: urlDisplay }) : null,
+        urls.length > 1 ? el('span', { className: 'bm-item__extra', textContent: `+${urls.length - 1}` }) : null,
+
       ]);
       const memo = item.memo
         ? el('div', { className: 'bm-item__memo' + (memoToggle.value ? '' : ' hidden'), textContent: item.memo })
@@ -90,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (openBtn) {
       e.stopPropagation();
       const item = BookmarkData.getById(Number(openBtn.dataset.idx));
-      if (item && item.url) window.open(item.url, '_blank');
+      if (item && item.urls) item.urls.forEach(u => { if (u) window.open(u, '_blank'); });
       return;
     }
 
@@ -98,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (copyBtn) {
       e.stopPropagation();
       const item = BookmarkData.getById(Number(copyBtn.dataset.idx));
-      if (item && item.url) copyWithFeedback(copyBtn, item.url);
+      if (item && item.urls && item.urls.length) copyWithFeedback(copyBtn, item.urls.join('\n'));
       return;
     }
 
@@ -125,4 +123,11 @@ document.addEventListener('DOMContentLoaded', () => {
       renderList();
     });
   });
+
+  // 언어 변경 시 i18n 재적용
+  window.addEventListener('langchange', () => {
+    I18n.applyI18n();
+  });
+
+  I18n.applyI18n();
 });

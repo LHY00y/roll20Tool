@@ -10,9 +10,9 @@
 
 <body>
   <div class="memo-toolbar">
-    <label class="memo-storage-label" title="체크 시 내용을 저장합니다">
+    <label class="memo-storage-label" data-i18n-title="memo_persist_hint" title="체크 시 내용을 저장합니다">
       <input type="checkbox" id="toggleStorage">
-      <span>브라우저 종료 후에도 내용 유지</span>
+      <span data-i18n="memo_persist">브라우저 종료 후에도 내용 유지</span>
     </label>
     <button class="memo-btn-copy" id="btnCopyAll">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -25,6 +25,7 @@
   <textarea class="memo-content" id="memoContent" placeholder=""></textarea>
 
   <script src="../assets/js/theme.js"></script>
+  <script src="../assets/js/i18n.js"></script>
   <script src="../assets/js/shared.js"></script>
   <script src="memoUI.js"></script>
   <script src="../assets/js/nodrop.js"></script>

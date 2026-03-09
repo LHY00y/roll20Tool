@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const text = getResolvedText();
 
     if (!text) {
-      previewBox.innerHTML = '<p style="color:#999">내용을 입력하면 미리보기가 표시됩니다.</p>';
+      previewBox.innerHTML = `<p style="color:#999">${I18n.t('ts_preview_empty')}</p>`;
       return;
     }
 
@@ -161,12 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch {
       previewBox.textContent = text;
     }
-  }
-
-  function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
   }
 
   // 내용 변경 시 파라미터 감지 + 미리보기 갱신
@@ -182,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isEdit) {
       const item = TypeSaver.getById(editIdx);
       if (item) {
-        pageTitle.textContent = '상용구 수정';
+        pageTitle.textContent = I18n.t('ts_edit');
         btnDelete.classList.remove('hidden');
         inputTitle.value = item.title;
         inputContent.value = item.content;
@@ -260,4 +254,18 @@ document.addEventListener('DOMContentLoaded', () => {
   btnBack.addEventListener('click', () => {
     window.location.href = 'index.html';
   });
+
+  // 언어 변경 시 동적 텍스트 갱신
+  window.addEventListener('langchange', () => {
+    I18n.applyI18n();
+    if (isEdit) {
+      pageTitle.textContent = I18n.t('ts_edit');
+    } else {
+      pageTitle.textContent = I18n.t('ts_add');
+    }
+    updatePreview();
+  });
+
+  // 초기 i18n 적용
+  I18n.applyI18n();
 });

@@ -24,7 +24,7 @@ function createStorageData(STORAGE_KEY, { searchFields = [], stripOnSave = [] } 
   }
 
   function nextIdx() {
-    return items.length === 0 ? 1 : Math.max(...items.map(i => i.idx)) + 1;
+    return items.length === 0 ? 1 : items.reduce((max, i) => Math.max(max, i.idx), 0) + 1;
   }
 
   function _addRaw(fields) {
@@ -112,5 +112,5 @@ function createStorageData(STORAGE_KEY, { searchFields = [], stripOnSave = [] } 
     });
   }
 
-  return { load, getAll, getById, update, remove, toggleBookmark, reorder, search, getAllTags, filterByTags, _addRaw };
+  return { load, save, getAll, getById, update, remove, toggleBookmark, reorder, search, getAllTags, filterByTags, _addRaw };
 }

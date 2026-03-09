@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "마키보드",
+  "name": "마끼보드",
   "version": "1.0.0",
-  "description": "Roll20 특화 클립보드",
+  "description": "옐로우마키의 Roll20 특화 클립보드",
   "sidebar_action": {
     "default_page": "sidebar.html",
     "default_icon": {
@@ -10,7 +10,7 @@
       "48": "assets/icons/icon48.png",
       "128": "assets/icons/icon128.png"
     },
-    "default_title": "마키보드",
+    "default_title": "마끼보드",
     "use_navigation_bar": false
   },
   "background": {

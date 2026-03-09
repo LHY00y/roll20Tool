@@ -207,12 +207,20 @@ textarea::placeholder {
 
 .bm-item__url {
   font-size: 11px;
-  color: #999;
+  color: color-mix(in srgb, var(--color-text) 20%, transparent);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
   flex: 1;
+}
+
+.bm-item__extra {
+  color: var(--color-primary);
+  font-size: 11px;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 0.2;
 }
 
 .bm-item__tags {

@@ -14,8 +14,8 @@
       <button class="cal__btn" id="btnPrev">‹</button>
       <span class="cal__title" id="calTitle"></span>
       <button class="cal__btn" id="btnNext">›</button>
-      <button class="cal__btn cal__btn--today" id="btnToday">오늘</button>
-      <button class="cal__btn cal__btn--subs" id="btnSubs" title="캘린더 구독 관리">
+      <button class="cal__btn cal__btn--today" id="btnToday" data-i18n="cal_today">오늘</button>
+      <button class="cal__btn cal__btn--subs" id="btnSubs" data-i18n-title="cal_subs_manage" title="캘린더 구독 관리">
         <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path fill-rule="evenodd" clip-rule="evenodd"
             d="M17.5 3h.75A2.755 2.755 0 0 1 21 5.75v12.5A2.755 2.755 0 0 1 18.25 21H5.75A2.755 2.755 0 0 1 3 18.25V5.75A2.755 2.755 0 0 1 5.75 3h.75V2H8v1h8V2h1.5v1Zm-11 1.5h-.75c-.69 0-1.25.56-1.25 1.25v1.745h15V5.75c0-.69-.56-1.25-1.25-1.25h-.75V6H16V4.5H8V6H6.5V4.5Zm-.75 15h12.5c.69 0 1.25-.56 1.25-1.25V8.995h-15v9.255c0 .69.56 1.25 1.25 1.25Zm5.5-9h1.5v2.75h2.75v1.5h-2.75v2.75h-1.5v-2.75H8.5v-1.5h2.75V10.5Z"
@@ -28,12 +28,12 @@
     <!-- iCal 구독 관리 패널 -->
     <div class="subs-panel" id="subsPanel" style="display:none;">
       <div class="subs-panel__header">
-        <span class="subs-panel__title">iCal 캘린더 구독</span>
+        <span class="subs-panel__title" data-i18n="cal_subs_title">iCal 캘린더 구독</span>
       </div>
       <ul class="subs-list" id="subsList"></ul>
       <div class="subs-add">
-        <input type="url" class="subs-add__input" id="subsUrlInput" placeholder="iCal URL (https://...)">
-        <button class="subs-add__btn" id="subsAddBtn">추가</button>
+        <input type="url" class="subs-add__input" id="subsUrlInput" data-i18n-placeholder="cal_subs_ph" placeholder="iCal URL (https://...)">
+        <button class="subs-add__btn" id="subsAddBtn" data-i18n="add">추가</button>
       </div>
       <div class="subs-status" id="subsStatus"></div>
     </div>
@@ -41,13 +41,13 @@
     <table class="cal__table">
       <thead>
         <tr>
-          <th class="sun">일</th>
-          <th>월</th>
-          <th>화</th>
-          <th>수</th>
-          <th>목</th>
-          <th>금</th>
-          <th class="sat">토</th>
+          <th class="sun" data-i18n="cal_sun">일</th>
+          <th data-i18n="cal_mon">월</th>
+          <th data-i18n="cal_tue">화</th>
+          <th data-i18n="cal_wed">수</th>
+          <th data-i18n="cal_thu">목</th>
+          <th data-i18n="cal_fri">금</th>
+          <th class="sat" data-i18n="cal_sat">토</th>
         </tr>
       </thead>
       <tbody id="calBody"></tbody>
@@ -57,7 +57,7 @@
   <!-- 알림 설정 -->
   <div class="cal-settings">
     <div class="cal-settings__row">
-      <span class="cal-settings__label">🔗 5분전 URL 열기</span>
+      <span class="cal-settings__label" data-i18n="cal_url_open">🔗 5분전 URL 열기</span>
       <label class="toggle">
         <input type="checkbox" id="toggleUrl" checked>
         <span class="toggle__slider"></span>
@@ -69,10 +69,10 @@
   <div class="evt-panel" id="evtPanel" style="display:none;">
     <div class="evt-panel__header">
       <span class="evt-panel__date" id="evtPanelDate"></span>
-      <button class="evt-panel__add" id="evtAddBtn" title="일정 추가">+</button>
+      <button class="evt-panel__add" id="evtAddBtn" data-i18n-title="cal_evt_add" title="일정 추가">+</button>
     </div>
     <ul class="evt-list" id="evtList"></ul>
-    <div class="evt-empty" id="evtEmpty">일정이 없습니다.</div>
+    <div class="evt-empty" id="evtEmpty" data-i18n="cal_evt_empty">일정이 없습니다.</div>
   </div>
 
   <!-- 수동 일정 폼 -->
@@ -83,10 +83,10 @@
         <button class="evt-form__close" id="evtFormClose">×</button>
       </div>
       <div class="evt-form__body">
-        <label class="evt-form__label">이름</label>
-        <input type="text" class="evt-form__input" id="evtName" placeholder="일정 이름">
+        <label class="evt-form__label" data-i18n="cal_evt_name">이름</label>
+        <input type="text" class="evt-form__input" id="evtName" data-i18n-placeholder="cal_evt_name_ph" placeholder="일정 이름">
 
-        <label class="evt-form__label">일자</label>
+        <label class="evt-form__label" data-i18n="cal_evt_date">일자</label>
         <div class="dp" id="dp">
           <div class="dp__field">
             <input type="text" class="evt-form__input dp__input" id="evtDate" placeholder="YYYY-MM-DD"
@@ -108,23 +108,23 @@
               <button class="dp__nav-btn" id="dpNext" type="button">›</button>
             </div>
             <div class="dp__weekdays">
-              <span class="dp__wk dp__wk--sun">일</span>
-              <span class="dp__wk">월</span>
-              <span class="dp__wk">화</span>
-              <span class="dp__wk">수</span>
-              <span class="dp__wk">목</span>
-              <span class="dp__wk">금</span>
-              <span class="dp__wk dp__wk--sat">토</span>
+              <span class="dp__wk dp__wk--sun" data-i18n="cal_sun">일</span>
+              <span class="dp__wk" data-i18n="cal_mon">월</span>
+              <span class="dp__wk" data-i18n="cal_tue">화</span>
+              <span class="dp__wk" data-i18n="cal_wed">수</span>
+              <span class="dp__wk" data-i18n="cal_thu">목</span>
+              <span class="dp__wk" data-i18n="cal_fri">금</span>
+              <span class="dp__wk dp__wk--sat" data-i18n="cal_sat">토</span>
             </div>
             <div class="dp__grid" id="dpGrid"></div>
             <div class="dp__foot">
-              <button class="dp__foot-btn dp__foot-btn--today" id="dpToday" type="button">오늘</button>
-              <button class="dp__foot-btn dp__foot-btn--clr" id="dpClr" type="button">초기화</button>
+              <button class="dp__foot-btn dp__foot-btn--today" id="dpToday" type="button" data-i18n="cal_dp_today">오늘</button>
+              <button class="dp__foot-btn dp__foot-btn--clr" id="dpClr" type="button" data-i18n="cal_dp_clear">초기화</button>
             </div>
           </div>
         </div>
 
-        <label class="evt-form__label">시간</label>
+        <label class="evt-form__label" data-i18n="cal_evt_time">시간</label>
         <div class="tp" id="tp">
           <div class="tp__field">
             <input type="text" class="evt-form__input tp__input" id="evtTime" placeholder="HH:MM" autocomplete="off"
@@ -156,21 +156,21 @@
               </div>
             </div>
             <div class="tp__foot">
-              <button class="tp__foot-btn tp__foot-btn--now" id="tpNow" type="button">현재시각</button>
-              <button class="tp__foot-btn tp__foot-btn--clr" id="tpClr" type="button">초기화</button>
+              <button class="tp__foot-btn tp__foot-btn--now" id="tpNow" type="button" data-i18n="cal_tp_now">현재시각</button>
+              <button class="tp__foot-btn tp__foot-btn--clr" id="tpClr" type="button" data-i18n="cal_tp_clear">초기화</button>
             </div>
           </div>
         </div>
 
-        <label class="evt-form__label">메모</label>
-        <textarea class="evt-form__textarea" id="evtMemo" rows="3" placeholder="메모"></textarea>
+        <label class="evt-form__label" data-i18n="memo_label">메모</label>
+        <textarea class="evt-form__textarea" id="evtMemo" rows="3" data-i18n-placeholder="memo_label" placeholder="메모"></textarea>
 
-        <label class="evt-form__label">URL</label>
+        <label class="evt-form__label" data-i18n="url_label">URL</label>
         <input type="url" class="evt-form__input" id="evtUrl" placeholder="https://...">
-        <span class="evt-form__hint">5분 전에 이 URL을 자동으로 엽니다.</span>
+        <span class="evt-form__hint" data-i18n="cal_url_hint">5분 전에 이 URL을 자동으로 엽니다.</span>
 
         <div class="evt-form__notify-row">
-          <span class="evt-form__label">🔔 5분 전 알림</span>
+          <span class="evt-form__label" data-i18n="cal_notify">🔔 5분 전 알림</span>
           <label class="toggle">
             <input type="checkbox" id="evtNotify" checked>
             <span class="toggle__slider"></span>
@@ -178,8 +178,8 @@
         </div>
       </div>
       <div class="evt-form__footer">
-        <button class="evt-form__btn evt-form__btn--delete" id="evtDeleteBtn" style="display:none;">삭제</button>
-        <button class="evt-form__btn evt-form__btn--save" id="evtSaveBtn">저장</button>
+        <button class="evt-form__btn evt-form__btn--delete" id="evtDeleteBtn" style="display:none;" data-i18n="delete">삭제</button>
+        <button class="evt-form__btn evt-form__btn--save" id="evtSaveBtn" data-i18n="save">저장</button>
       </div>
     </div>
   </div>
@@ -188,21 +188,21 @@
   <div class="evt-form-overlay" id="icalDetailOverlay" style="display:none;">
     <div class="evt-form" id="icalDetailForm">
       <div class="evt-form__header">
-        <span class="evt-form__title" id="icalDetailTitle">iCal 일정</span>
+        <span class="evt-form__title" id="icalDetailTitle" data-i18n="cal_ical_title">iCal 일정</span>
         <button class="evt-form__close" id="icalDetailClose">×</button>
       </div>
       <div class="evt-form__body">
         <div class="ical-detail__info" id="icalDetailInfo"></div>
 
-        <label class="evt-form__label">메모</label>
-        <textarea class="evt-form__textarea" id="icalDetailMemo" rows="3" placeholder="메모 추가"></textarea>
+        <label class="evt-form__label" data-i18n="memo_label">메모</label>
+        <textarea class="evt-form__textarea" id="icalDetailMemo" rows="3" data-i18n-placeholder="cal_ical_memo_ph" placeholder="메모 추가"></textarea>
 
-        <label class="evt-form__label">URL</label>
+        <label class="evt-form__label" data-i18n="url_label">URL</label>
         <input type="url" class="evt-form__input" id="icalDetailUrl" placeholder="https://...">
-        <span class="evt-form__hint">5분 전에 해당 URL을 자동으로 엽니다.</span>
+        <span class="evt-form__hint" data-i18n="cal_ical_url_hint">5분 전에 해당 URL을 자동으로 엽니다.</span>
 
         <div class="evt-form__notify-row">
-          <span class="evt-form__label">🔔 5분 전 알림</span>
+          <span class="evt-form__label" data-i18n="cal_notify">🔔 5분 전 알림</span>
           <label class="toggle">
             <input type="checkbox" id="icalDetailNotify" checked>
             <span class="toggle__slider"></span>
@@ -210,12 +210,13 @@
         </div>
       </div>
       <div class="evt-form__footer">
-        <button class="evt-form__btn evt-form__btn--save" id="icalDetailSave">저장</button>
+        <button class="evt-form__btn evt-form__btn--save" id="icalDetailSave" data-i18n="save">저장</button>
       </div>
     </div>
   </div>
 
   <script src="../assets/js/theme.js"></script>
+  <script src="../assets/js/i18n.js"></script>
   <script src="icalParser.js"></script>
   <script src="calendarData.js"></script>
   <script src="calendar.js"></script>
