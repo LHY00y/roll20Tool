@@ -12,6 +12,23 @@ body {
   height: 100vh;
 }
 
+/* 스크롤바 전체 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* 스크롤바 배경 */
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+/* 스크롤바 막대 */
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 4px;
+}
+
+
 input,
 textarea {
   background: var(--color-bg);
@@ -88,6 +105,7 @@ textarea::placeholder {
   font-weight: 600;
   color: color-mix(in srgb, var(--color-text) 80%, transparent);
   margin-bottom: 6px;
+  flex: 2;
 }
 
 .form-hint {
@@ -284,7 +302,8 @@ textarea {
   justify-content: space-between;
 }
 
-.btn-copy {
+.btn-copy,
+.btn-plain {
   border: none;
   background: none;
   color: #bbb;
@@ -296,8 +315,14 @@ textarea {
   transition: color 0.2s;
 }
 
+.btn-plain:hover,
 .btn-copy:hover {
   color: #555;
+}
+
+.btn-plain.active {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
 }
 
 .btn-copy.copied {
@@ -308,12 +333,13 @@ textarea {
   padding: 12px;
   border: color-mix(in srgb, var(--color-text) 50%, transparent);
   border-radius: 6px;
-  background-color: color-mix(in srgb, var(--color-text) 10%, transparent);
+  /* background-color: color-mix(in srgb, var(--color-text) 10%, transparent); */
+  background-color: #F1F1F1;
   font-size: 14px;
   line-height: 1.6;
   word-break: break-word;
   min-height: 60px;
-  color: var(--color-text);
+  color: #404040;
 }
 
 /* Markdown styles */
@@ -396,18 +422,14 @@ textarea {
   padding: 4px 12px;
   margin: 8px 0;
   color: #666;
-  background-color: #f0f4ff;
+  background-color: #F1F1F1;
   border-radius: 0 4px 4px 0;
 }
 
 .preview-box a {
-  color: var(--color-primary);
-  text-decoration: none;
+  color: #E10085;
 }
 
-.preview-box a:hover {
-  text-decoration: underline;
-}
 
 .preview-box hr {
   border: none;

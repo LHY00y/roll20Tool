@@ -30,7 +30,7 @@ const ICalParser = (() => {
         inEvent = false;
         nestedDepth = 0;
         const parsed = _buildEvent(current);
-        if (parsed) events.push(parsed);
+        if (parsed && parsed.status !== 'CANCELLED') events.push(parsed);
       } else if (inEvent) {
         if (trimmed.startsWith('BEGIN:')) {
           nestedDepth++;
@@ -64,6 +64,7 @@ const ICalParser = (() => {
 
   function _buildEvent(raw) {
     const uid = _val(raw, 'UID');
+    const status = _val(raw, 'STATUS').toUpperCase();
     const summary = _unescape(_val(raw, 'SUMMARY'));
     const description = _unescape(_val(raw, 'DESCRIPTION'));
     const location = _unescape(_val(raw, 'LOCATION'));
@@ -89,7 +90,7 @@ const ICalParser = (() => {
     const exdates = exdateRaw ? _parseExDates(exdateRaw.value) : new Set();
     const rdates = rdateRaw ? _parseRDates(rdateRaw.value) : [];
 
-    return { uid, summary, description, location, dtstart, dtend, allDay, rrule, exdates, rdates };
+    return { uid, status, summary, description, location, dtstart, dtend, allDay, rrule, exdates, rdates };
   }
 
   function _val(raw, key) {

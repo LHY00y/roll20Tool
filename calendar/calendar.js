@@ -49,8 +49,20 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedDate = null;
   let editingEventId = null;
   let icalDetailContext = null; // {subId, eventUid}
-  let tpSync = null; // 타임피커 sync 함수
-  let dpSync = null; // 데이트피커 sync 함수
+  let tpPicker = null; // 타임피커 {sync, retarget, openPanel, handleTimeInput, resetTarget}
+  let dpPicker = null; // 데이트피커 {sync, retarget, openPanel, handleDateInput, resetTarget}
+
+  // 날짜/시간 탭 (추가 모드 전용)
+  const dtTabs = document.getElementById('dtTabs');
+  const dtTabDatetime = document.getElementById('dtTabDatetime');
+  const dtTabRepeat = document.getElementById('dtTabRepeat');
+  const dtPanelDatetime = document.getElementById('dtPanelDatetime');
+  const dtPanelRepeat = document.getElementById('dtPanelRepeat');
+  const dtExtraRows = document.getElementById('dtExtraRows');
+  const dtAddRow = document.getElementById('dtAddRow');
+  const evtRepeatType = document.getElementById('evtRepeatType');
+  const repeatOptions = document.getElementById('repeatOptions');
+  const evtRepeatEnd = document.getElementById('evtRepeatEnd');
 
 
   // ══════════════════════════════════
@@ -262,6 +274,105 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ══════════════════════════════════
+  //  탭 전환 + 추가 일자/시간 행 관리
+  // ══════════════════════════════════
+  function dtShowTab(tab) {
+    const isDt = tab === 'datetime';
+    dtTabDatetime.classList.toggle('dt-tabs__tab--active', isDt);
+    dtTabRepeat.classList.toggle('dt-tabs__tab--active', !isDt);
+    dtPanelDatetime.style.display = isDt ? '' : 'none';
+    dtPanelRepeat.style.display = isDt ? 'none' : '';
+  }
+
+  function dtAddExtraRow() {
+    const row = document.createElement('div');
+    row.className = 'evt-form__datetime-row dt-extra-row';
+    row.innerHTML = `
+      <div class="evt-form__datetime-col">
+        <div class="dp">
+          <div class="dp__field">
+            <input type="text" class="evt-form__input dp__input" placeholder="YYYY-MM-DD" autocomplete="off" maxlength="10">
+            <button class="dp__toggle" type="button" tabindex="-1">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="evt-form__datetime-col evt-form__datetime-col--time">
+        <div class="tp">
+          <div class="tp__field">
+            <input type="text" class="evt-form__input tp__input" placeholder="HH:MM" autocomplete="off" inputmode="numeric" maxlength="5">
+            <button class="tp__toggle" type="button" tabindex="-1">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <button class="dt-extra-row__remove" type="button">×</button>
+    `;
+
+    const dateInput = row.querySelector('.dp__input');
+    const timeInput = row.querySelector('.tp__input');
+    const dpWrapEl  = row.querySelector('.dp');
+    const tpWrapEl  = row.querySelector('.tp');
+    const dpToggleBtn = row.querySelector('.dp__toggle');
+    const tpToggleBtn = row.querySelector('.tp__toggle');
+
+    // 날짜: 클릭/포커스 → 패널 열기
+    function openDpForRow() {
+      if (dpPicker) { dpPicker.retarget(dateInput, dpWrapEl); dpPicker.openPanel(); }
+    }
+    dateInput.addEventListener('click', openDpForRow);
+    dateInput.addEventListener('focus', openDpForRow);
+    dateInput.addEventListener('input', () => { if (dpPicker) dpPicker.handleDateInput(dateInput); });
+    dpToggleBtn.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      openDpForRow();
+    });
+
+    // 시간: 클릭/포커스 → 패널 열기
+    function openTpForRow() {
+      if (tpPicker) { tpPicker.retarget(timeInput, tpWrapEl); tpPicker.openPanel(); }
+    }
+    timeInput.addEventListener('click', openTpForRow);
+    timeInput.addEventListener('focus', openTpForRow);
+    timeInput.addEventListener('input', () => { if (tpPicker) tpPicker.handleTimeInput(timeInput); });
+    tpToggleBtn.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      openTpForRow();
+    });
+
+    // 삭제
+    row.querySelector('.dt-extra-row__remove').addEventListener('click', () => row.remove());
+
+    dtExtraRows.appendChild(row);
+    dateInput.focus();
+  }
+
+  function dtClearExtras() {
+    dtExtraRows.innerHTML = '';
+  }
+
+  function dtGetAllDateTimes() {
+    const list = [{ date: evtDate.value, time: evtTime.value }];
+    dtExtraRows.querySelectorAll('.dt-extra-row').forEach(row => {
+      const dateInput = row.querySelector('.dp__input');
+      const timeInput = row.querySelector('.tp__input');
+      list.push({ date: dateInput.value, time: timeInput.value });
+    });
+    return list;
+  }
+
+
+  // ══════════════════════════════════
   //  수동 일정 폼
   // ══════════════════════════════════
   function openFormForAdd(dateStr) {
@@ -269,13 +380,21 @@ document.addEventListener('DOMContentLoaded', () => {
     evtFormTitle.textContent = I18n.t('cal_evt_add');
     evtName.value = '';
     evtDate.value = dateStr;
-    if (dpSync) dpSync();
+    if (dpPicker) dpPicker.sync();
     evtTime.value = '';
-    if (tpSync) tpSync();
+    if (tpPicker) tpPicker.sync();
     evtMemo.value = '';
     evtUrl.value = '';
     evtNotify.checked = true;
     evtDeleteBtn.style.display = 'none';
+    // 탭 초기화 및 표시
+    dtTabs.style.display = '';
+    dtShowTab('datetime');
+    dtClearExtras();
+    dtAddRow.style.display = '';
+    evtRepeatType.value = 'none';
+    repeatOptions.style.display = 'none';
+    evtRepeatEnd.value = '';
     evtFormOverlay.style.display = 'flex';
     evtName.focus();
   }
@@ -288,13 +407,19 @@ document.addEventListener('DOMContentLoaded', () => {
     evtFormTitle.textContent = I18n.t('cal_evt_edit');
     evtName.value = evt.name || '';
     evtDate.value = evt.date || '';
-    if (dpSync) dpSync();
+    if (dpPicker) dpPicker.sync();
     evtTime.value = evt.time || '';
-    if (tpSync) tpSync();
+    if (tpPicker) tpPicker.sync();
     evtMemo.value = evt.memo || '';
     evtUrl.value = evt.url || '';
     evtNotify.checked = evt.notify !== false;
     evtDeleteBtn.style.display = 'inline-flex';
+    // 수정 모드에서는 탭/추가 버튼 숨김
+    dtTabs.style.display = 'none';
+    dtPanelDatetime.style.display = '';
+    dtPanelRepeat.style.display = 'none';
+    dtClearExtras();
+    dtAddRow.style.display = 'none';
     evtFormOverlay.style.display = 'flex';
     evtName.focus();
   }
@@ -302,33 +427,50 @@ document.addEventListener('DOMContentLoaded', () => {
   function closeForm() {
     evtFormOverlay.style.display = 'none';
     editingEventId = null;
-    const tpPanelEl = document.getElementById('tpPanel');
-    if (tpPanelEl) tpPanelEl.classList.remove('tp__panel--open');
-    const dpPanelEl = document.getElementById('dpPanel');
-    if (dpPanelEl) dpPanelEl.classList.remove('dp__panel--open');
+    if (tpPicker) tpPicker.sync();
+    if (dpPicker) dpPicker.sync();
   }
 
   function saveEvent() {
     const name = evtName.value.trim();
-    const date = evtDate.value;
-    const time = evtTime.value;
     const memo = evtMemo.value.trim();
     const url = evtUrl.value.trim();
     const notify = evtNotify.checked;
 
     if (!name) { evtName.focus(); return; }
-    if (!date) { evtDate.focus(); return; }
 
     if (editingEventId) {
+      // 수정 모드: 단일 이벤트
+      const date = evtDate.value;
+      const time = evtTime.value;
+      if (!date) { evtDate.focus(); return; }
       CalendarEvents.update(editingEventId, { name, date, time, memo, url, notify });
+      closeForm();
+      selectedDate = date;
+      render();
+      showEventsPanel(date);
     } else {
-      CalendarEvents.add(name, date, time, memo, url, notify);
+      // 추가 모드: 모든 행의 일자/시간으로 이벤트 생성
+      const allDt = dtGetAllDateTimes();
+      // 날짜 유효성 검사
+      if (!allDt[0].date) { evtDate.focus(); return; }
+      for (let i = 1; i < allDt.length; i++) {
+        if (!allDt[i].date) {
+          const rows = dtExtraRows.querySelectorAll('.dt-extra-row');
+          rows[i - 1].querySelector('.dp__input').focus();
+          return;
+        }
+      }
+      let lastDate = allDt[0].date;
+      allDt.forEach(dt => {
+        CalendarEvents.add(name, dt.date, dt.time, memo, url, notify);
+        lastDate = dt.date;
+      });
+      closeForm();
+      selectedDate = lastDate;
+      render();
+      showEventsPanel(lastDate);
     }
-
-    closeForm();
-    selectedDate = date;
-    render();
-    showEventsPanel(date);
   }
 
   function deleteEvent() {
@@ -544,6 +686,14 @@ document.addEventListener('DOMContentLoaded', () => {
     el.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveEvent(); });
   });
 
+  // 탭 전환
+  dtTabDatetime.addEventListener('click', () => dtShowTab('datetime'));
+  dtTabRepeat.addEventListener('click', () => dtShowTab('repeat'));
+  dtAddRow.addEventListener('click', () => dtAddExtraRow());
+  evtRepeatType.addEventListener('change', () => {
+    repeatOptions.style.display = evtRepeatType.value === 'none' ? 'none' : '';
+  });
+
   icalDetailClose.addEventListener('click', closeIcalDetail);
   icalDetailOverlay.addEventListener('click', (e) => { if (e.target === icalDetailOverlay) closeIcalDetail(); });
   icalDetailSave.addEventListener('click', saveIcalAnnotation);
@@ -589,7 +739,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ══════════════════════════════════
-  //  12h 타임 피커
+  //  12h 타임 피커 (공유 패널 방식)
   // ══════════════════════════════════
   function initTimePicker() {
     const tpPanel  = document.getElementById('tpPanel');
@@ -605,8 +755,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const tpWrap   = document.getElementById('tp');
 
     let h12 = 12, min = 0, ap = 'AM';
+    let tpTarget = evtTime;       // 현재 값을 쓸 input
+    let tpActiveWrap = tpWrap;    // 패널이 붙어있는 .tp 컨테이너
 
-    // 내부 12h → 24h 문자열
     function to24() {
       let h = h12;
       if (ap === 'AM') { if (h === 12) h = 0; }
@@ -614,7 +765,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
     }
 
-    // 24h 문자열 → 내부 12h 상태
     function from24(val) {
       if (!val) { h12 = 12; min = 0; ap = 'AM'; return; }
       const m = val.match(/^(\d{1,2}):(\d{2})$/);
@@ -626,7 +776,6 @@ document.addEventListener('DOMContentLoaded', () => {
       min = mi;
     }
 
-    // UI 갱신
     function render() {
       tpHr.value = String(h12);
       tpMi.value = String(min).padStart(2, '0');
@@ -634,21 +783,38 @@ document.addEventListener('DOMContentLoaded', () => {
       tpPmBtn.classList.toggle('tp__ap--on', ap === 'PM');
     }
 
-    // evtTime 값 반영
     function commit() {
-      evtTime.value = to24();
+      tpTarget.value = to24();
+    }
+
+    // ── 타겟 변경 (추가 행용) ──
+    function retarget(input, wrap) {
+      closePanel();
+      tpTarget = input;
+      if (tpActiveWrap !== wrap) {
+        wrap.appendChild(tpPanel);
+        tpActiveWrap = wrap;
+      }
+    }
+
+    function resetTarget() {
+      tpTarget = evtTime;
+      if (tpActiveWrap !== tpWrap) {
+        tpWrap.appendChild(tpPanel);
+        tpActiveWrap = tpWrap;
+      }
     }
 
     // ── 패널 열기/닫기 ──
     function openPanel() {
       if (tpPanel.classList.contains('tp__panel--open')) return;
-      if (!evtTime.value) {
+      if (!tpTarget.value) {
         const now = new Date();
         h12 = now.getHours() % 12 || 12;
         min = now.getMinutes();
         ap  = now.getHours() >= 12 ? 'PM' : 'AM';
       } else {
-        from24(evtTime.value);
+        from24(tpTarget.value);
       }
       render();
       tpPanel.classList.add('tp__panel--open');
@@ -660,34 +826,31 @@ document.addEventListener('DOMContentLoaded', () => {
       tpMiCol.classList.remove('tp__col--focus');
     }
 
-    // 외부에서 evtTime.value 설정 후 호출
     function sync() {
       if (evtTime.value) from24(evtTime.value);
       else { h12 = 12; min = 0; ap = 'AM'; }
       render();
       closePanel();
+      resetTarget();
     }
 
-    // ── 패널 토글 이벤트 ──
-    evtTime.addEventListener('click', openPanel);
-    evtTime.addEventListener('focus', openPanel);
+    // ── 메인 input 이벤트 ──
+    evtTime.addEventListener('click', () => { resetTarget(); openPanel(); });
+    evtTime.addEventListener('focus', () => { resetTarget(); openPanel(); });
 
     tpToggle.addEventListener('mousedown', (e) => {
       e.preventDefault();
+      resetTarget();
       if (tpPanel.classList.contains('tp__panel--open')) closePanel();
       else openPanel();
     });
 
     // 바깥 클릭 → 닫기
     document.addEventListener('mousedown', (e) => {
-      if (tpWrap && !tpWrap.contains(e.target)) closePanel();
-    });
-
-    // 포커스가 tp 밖으로 이동 → 닫기 (Tab 키 등)
-    tpWrap.addEventListener('focusout', () => {
-      requestAnimationFrame(() => {
-        if (!tpWrap.contains(document.activeElement)) closePanel();
-      });
+      if (!tpPanel.classList.contains('tp__panel--open')) return;
+      if (tpActiveWrap && tpActiveWrap.contains(e.target)) return;
+      if (e.target.closest('.tp')) return;
+      closePanel();
     });
 
     // ── 시 입력 ──
@@ -702,7 +865,6 @@ document.addEventListener('DOMContentLoaded', () => {
       tpHr.value = v;
       const n = parseInt(v);
       if (n >= 1 && n <= 12) { h12 = n; commit(); }
-      // 13~24 입력 시 PM 자동 전환
       if (n >= 13 && n <= 23) {
         ap = 'PM'; h12 = n - 12; commit(); render();
         tpMi.focus(); return;
@@ -725,7 +887,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tpHr.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowUp')   { e.preventDefault(); adjHour(1); }
       if (e.key === 'ArrowDown') { e.preventDefault(); adjHour(-1); }
-      if (e.key === 'Enter')     { e.preventDefault(); closePanel(); evtTime.focus(); }
+      if (e.key === 'Enter')     { e.preventDefault(); closePanel(); tpTarget.focus(); }
       if (e.key === 'Tab' && !e.shiftKey) { e.preventDefault(); tpMi.focus(); }
     });
 
@@ -757,7 +919,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tpMi.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowUp')   { e.preventDefault(); adjMin(1); }
       if (e.key === 'ArrowDown') { e.preventDefault(); adjMin(-1); }
-      if (e.key === 'Enter')     { e.preventDefault(); closePanel(); evtTime.focus(); }
+      if (e.key === 'Enter')     { e.preventDefault(); closePanel(); tpTarget.focus(); }
       if (e.key === 'Tab' && e.shiftKey) { e.preventDefault(); tpHr.focus(); }
     });
 
@@ -781,11 +943,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('tpMiUp').addEventListener('click', () => { adjMin(1); tpMi.focus(); });
     document.getElementById('tpMiDn').addEventListener('click', () => { adjMin(-1); tpMi.focus(); });
 
-    // ── AM / PM ──
     tpAmBtn.addEventListener('click', () => { ap = 'AM'; render(); commit(); });
     tpPmBtn.addEventListener('click', () => { ap = 'PM'; render(); commit(); });
 
-    // ── Now / Clear ──
     tpNowBtn.addEventListener('click', () => {
       const now = new Date();
       h12 = now.getHours() % 12 || 12;
@@ -796,14 +956,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tpClrBtn.addEventListener('click', () => {
       h12 = 12; min = 0; ap = 'AM';
-      evtTime.value = '';
+      tpTarget.value = '';
       render(); closePanel();
     });
 
-    // ── 직접 타이핑 (HH:MM) ──
-    evtTime.addEventListener('input', () => {
-      const val = evtTime.value;
-      // 완전한 HH:MM 패턴
+    // ── 직접 타이핑 (HH:MM) - 메인 input ──
+    function handleTimeInput(input) {
+      const val = input.value;
       if (/^\d{1,2}:\d{2}$/.test(val)) {
         const [hStr, mStr] = val.split(':');
         let hh = parseInt(hStr), mm = parseInt(mStr);
@@ -812,23 +971,24 @@ document.addEventListener('DOMContentLoaded', () => {
           ap = 'PM'; h12 = hh - 12; min = mm;
         } else if (hh === 0 || hh === 24) {
           ap = 'AM'; h12 = 12; min = mm;
-          evtTime.value = '00:' + String(mm).padStart(2, '0');
+          input.value = '00:' + String(mm).padStart(2, '0');
         } else {
           from24(String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0'));
         }
         render();
       }
       if (!val) { h12 = 12; min = 0; ap = 'AM'; render(); }
-    });
+    }
 
-    // 초기 렌더링
+    evtTime.addEventListener('input', () => handleTimeInput(evtTime));
+
     render();
-    return sync;
+    return { sync, retarget, openPanel, handleTimeInput, resetTarget };
   }
 
 
   // ══════════════════════════════════
-  //  날짜 선택기 (Date Picker)
+  //  날짜 선택기 (공유 패널 방식)
   // ══════════════════════════════════
   function initDatePicker() {
     const dpPanel    = document.getElementById('dpPanel');
@@ -842,10 +1002,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const dpWrap     = document.getElementById('dp');
 
     let viewYear, viewMonth;
+    let dpTarget = evtDate;       // 현재 값을 쓸 input
+    let dpActiveWrap = dpWrap;    // 패널이 붙어있는 .dp 컨테이너
 
-    // 현재 evtDate 값에서 viewYear/viewMonth 초기화
     function initView() {
-      const val = evtDate.value;
+      const val = dpTarget.value;
       if (val && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
         const parts = val.split('-').map(Number);
         viewYear  = parts[0];
@@ -871,11 +1032,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const todayNow = new Date();
       const todayStr = formatDate(todayNow.getFullYear(), todayNow.getMonth(), todayNow.getDate());
-      const selStr   = evtDate.value;
+      const selStr   = dpTarget.value;
 
       const cells = [];
 
-      // 이전달 채우기
       for (let i = firstDay - 1; i >= 0; i--) {
         const d = prevLast - i;
         const pm = viewMonth - 1;
@@ -884,12 +1044,10 @@ document.addEventListener('DOMContentLoaded', () => {
         cells.push({ day: d, dateStr: formatDate(py, rm, d), other: true });
       }
 
-      // 이번달
       for (let d = 1; d <= lastDate; d++) {
         cells.push({ day: d, dateStr: formatDate(viewYear, viewMonth, d), other: false });
       }
 
-      // 다음달 채우기
       const remain = 7 - (cells.length % 7);
       if (remain < 7) {
         for (let d = 1; d <= remain; d++) {
@@ -914,12 +1072,30 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cell.dateStr === selStr)   btn.classList.add('dp__cell--selected');
 
         btn.addEventListener('click', () => {
-          evtDate.value = cell.dateStr;
+          dpTarget.value = cell.dateStr;
           closePanel();
         });
 
         dpGrid.appendChild(btn);
       });
+    }
+
+    // ── 타겟 변경 (추가 행용) ──
+    function retarget(input, wrap) {
+      closePanel();
+      dpTarget = input;
+      if (dpActiveWrap !== wrap) {
+        wrap.appendChild(dpPanel);
+        dpActiveWrap = wrap;
+      }
+    }
+
+    function resetTarget() {
+      dpTarget = evtDate;
+      if (dpActiveWrap !== dpWrap) {
+        dpWrap.appendChild(dpPanel);
+        dpActiveWrap = dpWrap;
+      }
     }
 
     // ── 패널 열기/닫기 ──
@@ -934,32 +1110,29 @@ document.addEventListener('DOMContentLoaded', () => {
       dpPanel.classList.remove('dp__panel--open');
     }
 
-    // 외부에서 evtDate.value 설정 후 호출
     function sync() {
       initView();
       closePanel();
+      resetTarget();
     }
 
-    // ── 패널 토글 이벤트 ──
-    evtDate.addEventListener('click', openPanel);
-    evtDate.addEventListener('focus', openPanel);
+    // ── 메인 input 이벤트 ──
+    evtDate.addEventListener('click', () => { resetTarget(); openPanel(); });
+    evtDate.addEventListener('focus', () => { resetTarget(); openPanel(); });
 
     dpToggle.addEventListener('mousedown', (e) => {
       e.preventDefault();
+      resetTarget();
       if (dpPanel.classList.contains('dp__panel--open')) closePanel();
       else openPanel();
     });
 
     // 바깥 클릭 → 닫기
     document.addEventListener('mousedown', (e) => {
-      if (dpWrap && !dpWrap.contains(e.target)) closePanel();
-    });
-
-    // 포커스가 dp 밖으로 이동 → 닫기
-    dpWrap.addEventListener('focusout', () => {
-      requestAnimationFrame(() => {
-        if (!dpWrap.contains(document.activeElement)) closePanel();
-      });
+      if (!dpPanel.classList.contains('dp__panel--open')) return;
+      if (dpActiveWrap && dpActiveWrap.contains(e.target)) return;
+      if (e.target.closest('.dp')) return;
+      closePanel();
     });
 
     // ── 네비게이션 ──
@@ -978,7 +1151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── Today / Clear ──
     dpTodayBtn.addEventListener('click', () => {
       const now = new Date();
-      evtDate.value = formatDate(now.getFullYear(), now.getMonth(), now.getDate());
+      dpTarget.value = formatDate(now.getFullYear(), now.getMonth(), now.getDate());
       viewYear  = now.getFullYear();
       viewMonth = now.getMonth();
       renderGrid();
@@ -986,17 +1159,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     dpClrBtn.addEventListener('click', () => {
-      evtDate.value = '';
+      dpTarget.value = '';
       closePanel();
     });
 
-    // ── 직접 타이핑 (YYYY-MM-DD) ──
-    evtDate.addEventListener('input', () => {
-      let v = evtDate.value;
-      // 숫자와 하이픈만 허용
+    // ── 직접 타이핑 (YYYY-MM-DD) - 공통 핸들러 ──
+    function handleDateInput(input) {
+      let v = input.value;
       v = v.replace(/[^\d-]/g, '');
-
-      // 자동 하이픈 삽입: 4자리 입력 후 → "YYYY-", 7자리 후 → "YYYY-MM-"
       const digits = v.replace(/-/g, '');
       if (digits.length >= 4 && v.indexOf('-') === -1) {
         v = digits.slice(0, 4) + '-' + digits.slice(4);
@@ -1004,9 +1174,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (digits.length >= 6 && v.lastIndexOf('-') <= 4) {
         v = digits.slice(0, 4) + '-' + digits.slice(4, 6) + '-' + digits.slice(6);
       }
-      evtDate.value = v;
+      input.value = v;
 
-      // 완전한 날짜면 뷰 업데이트
       if (/^\d{4}-\d{2}-\d{2}$/.test(v)) {
         const [y, m, d] = v.split('-').map(Number);
         if (m >= 1 && m <= 12 && d >= 1 && d <= 31) {
@@ -1015,9 +1184,10 @@ document.addEventListener('DOMContentLoaded', () => {
           if (dpPanel.classList.contains('dp__panel--open')) renderGrid();
         }
       }
-    });
+    }
 
-    // 키보드 Enter → 패널 열려있으면 닫기 (닫혀있으면 saveEvent 진행)
+    evtDate.addEventListener('input', () => handleDateInput(evtDate));
+
     evtDate.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && dpPanel.classList.contains('dp__panel--open')) {
         e.preventDefault();
@@ -1026,7 +1196,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    return sync;
+    return { sync, retarget, openPanel, handleDateInput, resetTarget };
   }
 
 
@@ -1034,8 +1204,8 @@ document.addEventListener('DOMContentLoaded', () => {
   Promise.all([CalendarEvents.init(), CalendarIcal.init(), loadSettings()]).then(async () => {
     const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     selectedDate = todayStr;
-    tpSync = initTimePicker();
-    dpSync = initDatePicker();
+    tpPicker = initTimePicker();
+    dpPicker = initDatePicker();
     await render();
     showEventsPanel(todayStr);
     I18n.applyI18n();

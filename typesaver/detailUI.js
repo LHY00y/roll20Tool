@@ -147,6 +147,15 @@ document.addEventListener('DOMContentLoaded', () => {
     return text;
   }
 
+  // [text](#"style="css) → <a style="css">text</a> 전처리 후 marked 변환
+  function renderMarkdown(text) {
+    const processed = text.replace(
+      /\[([^\]]+)\]\(#"style="([^)]+)\)/g,
+      '<a style="$2">$1</a>'
+    );
+    return marked.parse(processed);
+  }
+
   // 미리보기 업데이트
   function updatePreview() {
     const text = getResolvedText();
@@ -157,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      previewBox.innerHTML = marked.parse(text);
+      previewBox.innerHTML = renderMarkdown(text);
     } catch {
       previewBox.textContent = text;
     }
@@ -237,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 1500);
     };
     try {
-      const html = marked.parse(text);
+      const html = renderMarkdown(text);
       const clipItem = new ClipboardItem({
         'text/html': new Blob([html], { type: 'text/html' }),
         'text/plain': new Blob([text], { type: 'text/plain' })

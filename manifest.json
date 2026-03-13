@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "마끼보드",
-  "version": "1.0.0",
-  "description": "옐로우마키의 Roll20 특화 클립보드",
+  "version": "1.0.1",
+  "description": "옐로우마키 Roll20 특화 클립보드",
   "sidebar_action": {
     "default_page": "sidebar.html",
     "default_icon": {

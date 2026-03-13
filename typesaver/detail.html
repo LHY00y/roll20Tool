@@ -32,17 +32,21 @@
 
         <div class="detail__form">
             <label class="form-label" for="inputTitle" data-i18n="title_label">제목</label>
-            <input type="text" class="form-input" id="inputTitle" data-i18n-placeholder="ts_title_ph" placeholder="제목을 입력하세요">
+            <input type="text" class="form-input" id="inputTitle" data-i18n-placeholder="ts_title_ph"
+                placeholder="제목을 입력하세요">
 
-            <label class="form-label" for="inputTag"><span data-i18n="tag_label">태그</span> <span class="form-hint" data-i18n="ts_tag_hint">쉼표(,)로 구분</span></label>
+            <label class="form-label" for="inputTag"><span data-i18n="tag_label">태그</span> <span class="form-hint"
+                    data-i18n="ts_tag_hint">쉼표(,)로 구분</span></label>
             <div class="tag-input-wrap" id="tagInputWrap">
                 <div class="tag-chips" id="tagChips"></div>
-                <input type="text" class="tag-input" id="inputTag" data-i18n-placeholder="tag_placeholder" placeholder="태그 입력 후 쉼표 또는 Enter">
+                <input type="text" class="tag-input" id="inputTag" data-i18n-placeholder="tag_placeholder"
+                    placeholder="태그 입력 후 쉼표 또는 Enter">
             </div>
 
-            <label class="form-label" for="inputContent"><span data-i18n="content_label">내용</span> <span class="form-hint">${파라미터명} 으로 변수 삽입</span></label>
-            <textarea class="form-textarea" id="inputContent" data-i18n-placeholder="ts_content_ph" placeholder="내용을 입력하세요&#10;예: ${이름}님 안녕하세요."
-                rows="6"></textarea>
+            <label class="form-label" for="inputContent"><span data-i18n="content_label">내용</span> <span
+                    class="form-hint">${파라미터명} 으로 변수 삽입</span></label>
+            <textarea class="form-textarea" id="inputContent" data-i18n-placeholder="ts_content_ph"
+                placeholder="내용을 입력하세요&#10;예: ${이름}님 안녕하세요." rows="6"></textarea>
 
             <div class="params-section hidden" id="paramsSection">
                 <label class="form-label" data-i18n="ts_params">파라미터</label>
@@ -52,8 +56,15 @@
             <div class="preview-section">
                 <div class="preview-header">
                     <label class="form-label" data-i18n="ts_preview">미리보기</label>
+                    <button class="btn-plain" id="btnPlainPreview" title="서식지우기">
+                        <svg width="24" height="24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M7.68 4.5 6.18 3H21v1.5h-7.215l-1.29 4.815L11.27 8.09l.965-3.59H7.68Zm2.695 6.935L3.22 4.28l1.06-1.06 16.5 16.5-1.06 1.06-8.12-8.12L9.365 21H7.81l2.565-9.565Z"
+                                fill="currentColor" />
+                        </svg>
+                    </button>
                     <button class="btn-copy" id="btnCopyPreview" title="복사">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="9" y="9" width="13" height="13" rx="2" />
                             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />

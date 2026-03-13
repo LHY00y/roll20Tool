@@ -32,7 +32,8 @@
       </div>
       <ul class="subs-list" id="subsList"></ul>
       <div class="subs-add">
-        <input type="url" class="subs-add__input" id="subsUrlInput" data-i18n-placeholder="cal_subs_ph" placeholder="iCal URL (https://...)">
+        <input type="url" class="subs-add__input" id="subsUrlInput" data-i18n-placeholder="cal_subs_ph"
+          placeholder="iCal URL (https://...)">
         <button class="subs-add__btn" id="subsAddBtn" data-i18n="add">추가</button>
       </div>
       <div class="subs-status" id="subsStatus"></div>
@@ -84,86 +85,131 @@
       </div>
       <div class="evt-form__body">
         <label class="evt-form__label" data-i18n="cal_evt_name">이름</label>
-        <input type="text" class="evt-form__input" id="evtName" data-i18n-placeholder="cal_evt_name_ph" placeholder="일정 이름">
+        <input type="text" class="evt-form__input" id="evtName" data-i18n-placeholder="cal_evt_name_ph"
+          placeholder="일정 이름">
 
-        <label class="evt-form__label" data-i18n="cal_evt_date">일자</label>
-        <div class="dp" id="dp">
-          <div class="dp__field">
-            <input type="text" class="evt-form__input dp__input" id="evtDate" placeholder="YYYY-MM-DD"
-              autocomplete="off" maxlength="10">
-            <button class="dp__toggle" id="dpToggle" type="button" tabindex="-1">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-              </svg>
-            </button>
-          </div>
-          <div class="dp__panel" id="dpPanel">
-            <div class="dp__nav">
-              <button class="dp__nav-btn" id="dpPrev" type="button">‹</button>
-              <span class="dp__nav-title" id="dpNavTitle"></span>
-              <button class="dp__nav-btn" id="dpNext" type="button">›</button>
-            </div>
-            <div class="dp__weekdays">
-              <span class="dp__wk dp__wk--sun" data-i18n="cal_sun">일</span>
-              <span class="dp__wk" data-i18n="cal_mon">월</span>
-              <span class="dp__wk" data-i18n="cal_tue">화</span>
-              <span class="dp__wk" data-i18n="cal_wed">수</span>
-              <span class="dp__wk" data-i18n="cal_thu">목</span>
-              <span class="dp__wk" data-i18n="cal_fri">금</span>
-              <span class="dp__wk dp__wk--sat" data-i18n="cal_sat">토</span>
-            </div>
-            <div class="dp__grid" id="dpGrid"></div>
-            <div class="dp__foot">
-              <button class="dp__foot-btn dp__foot-btn--today" id="dpToday" type="button" data-i18n="cal_dp_today">오늘</button>
-              <button class="dp__foot-btn dp__foot-btn--clr" id="dpClr" type="button" data-i18n="cal_dp_clear">초기화</button>
-            </div>
-          </div>
+        <!-- 탭 바 (추가 모드 전용) -->
+        <div class="dt-tabs" id="dtTabs" style="display:none;">
+          <button class="dt-tabs__tab dt-tabs__tab--active" id="dtTabDatetime" type="button"
+            data-i18n="cal_tab_datetime">일자/시간</button>
+          <button class="dt-tabs__tab" id="dtTabRepeat" type="button" data-i18n="cal_tab_repeat">반복</button>
         </div>
 
-        <label class="evt-form__label" data-i18n="cal_evt_time">시간</label>
-        <div class="tp" id="tp">
-          <div class="tp__field">
-            <input type="text" class="evt-form__input tp__input" id="evtTime" placeholder="HH:MM" autocomplete="off"
-              inputmode="numeric" maxlength="5">
-            <button class="tp__toggle" id="tpToggle" type="button" tabindex="-1">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
+        <!-- 탭1: 일자/시간 -->
+        <div class="dt-panel" id="dtPanelDatetime">
+          <div class="evt-form__datetime-row">
+            <div class="evt-form__datetime-col">
+              <label class="evt-form__label" data-i18n="cal_evt_date">일자</label>
+              <div class="dp" id="dp">
+                <div class="dp__field">
+                  <input type="text" class="evt-form__input dp__input" id="evtDate" placeholder="YYYY-MM-DD"
+                    autocomplete="off" maxlength="10">
+                  <button class="dp__toggle" id="dpToggle" type="button" tabindex="-1">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="dp__panel" id="dpPanel">
+                  <div class="dp__nav">
+                    <button class="dp__nav-btn" id="dpPrev" type="button">‹</button>
+                    <span class="dp__nav-title" id="dpNavTitle"></span>
+                    <button class="dp__nav-btn" id="dpNext" type="button">›</button>
+                  </div>
+                  <div class="dp__weekdays">
+                    <span class="dp__wk dp__wk--sun" data-i18n="cal_sun">일</span>
+                    <span class="dp__wk" data-i18n="cal_mon">월</span>
+                    <span class="dp__wk" data-i18n="cal_tue">화</span>
+                    <span class="dp__wk" data-i18n="cal_wed">수</span>
+                    <span class="dp__wk" data-i18n="cal_thu">목</span>
+                    <span class="dp__wk" data-i18n="cal_fri">금</span>
+                    <span class="dp__wk dp__wk--sat" data-i18n="cal_sat">토</span>
+                  </div>
+                  <div class="dp__grid" id="dpGrid"></div>
+                  <div class="dp__foot">
+                    <button class="dp__foot-btn dp__foot-btn--today" id="dpToday" type="button"
+                      data-i18n="cal_dp_today">오늘</button>
+                    <button class="dp__foot-btn dp__foot-btn--clr" id="dpClr" type="button"
+                      data-i18n="cal_dp_clear">초기화</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="evt-form__datetime-col evt-form__datetime-col--time">
+              <label class="evt-form__label" data-i18n="cal_evt_time">시간</label>
+              <div class="tp" id="tp">
+                <div class="tp__field">
+                  <input type="text" class="evt-form__input tp__input" id="evtTime" placeholder="HH:MM"
+                    autocomplete="off" inputmode="numeric" maxlength="5">
+                  <button class="tp__toggle" id="tpToggle" type="button" tabindex="-1">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="tp__panel" id="tpPanel">
+                  <div class="tp__row">
+                    <div class="tp__col" id="tpHrCol">
+                      <button class="tp__arr" id="tpHrUp" type="button">▲</button>
+                      <input class="tp__num" id="tpHr" type="text" maxlength="2" inputmode="numeric">
+                      <button class="tp__arr" id="tpHrDn" type="button">▼</button>
+                    </div>
+                    <div class="tp__colon">:</div>
+                    <div class="tp__col" id="tpMiCol">
+                      <button class="tp__arr" id="tpMiUp" type="button">▲</button>
+                      <input class="tp__num" id="tpMi" type="text" maxlength="2" inputmode="numeric">
+                      <button class="tp__arr" id="tpMiDn" type="button">▼</button>
+                    </div>
+                    <div class="tp__ampm">
+                      <button class="tp__ap" id="tpAm" type="button">AM</button>
+                      <button class="tp__ap" id="tpPm" type="button">PM</button>
+                    </div>
+                  </div>
+                  <div class="tp__foot">
+                    <button class="tp__foot-btn tp__foot-btn--now" id="tpNow" type="button"
+                      data-i18n="cal_tp_now">현재시각</button>
+                    <button class="tp__foot-btn tp__foot-btn--clr" id="tpClr" type="button"
+                      data-i18n="cal_tp_clear">초기화</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button class="dt-add-row" id="dtAddRow" type="button" style="display:none;">
+              <span>+</span>
             </button>
           </div>
-          <div class="tp__panel" id="tpPanel">
-            <div class="tp__row">
-              <div class="tp__col" id="tpHrCol">
-                <button class="tp__arr" id="tpHrUp" type="button">▲</button>
-                <input class="tp__num" id="tpHr" type="text" maxlength="2" inputmode="numeric">
-                <button class="tp__arr" id="tpHrDn" type="button">▼</button>
-              </div>
-              <div class="tp__colon">:</div>
-              <div class="tp__col" id="tpMiCol">
-                <button class="tp__arr" id="tpMiUp" type="button">▲</button>
-                <input class="tp__num" id="tpMi" type="text" maxlength="2" inputmode="numeric">
-                <button class="tp__arr" id="tpMiDn" type="button">▼</button>
-              </div>
-              <div class="tp__ampm">
-                <button class="tp__ap" id="tpAm" type="button">AM</button>
-                <button class="tp__ap" id="tpPm" type="button">PM</button>
-              </div>
-            </div>
-            <div class="tp__foot">
-              <button class="tp__foot-btn tp__foot-btn--now" id="tpNow" type="button" data-i18n="cal_tp_now">현재시각</button>
-              <button class="tp__foot-btn tp__foot-btn--clr" id="tpClr" type="button" data-i18n="cal_tp_clear">초기화</button>
-            </div>
+          <!-- 추가 일자/시간 행 -->
+          <div id="dtExtraRows"></div>
+
+        </div>
+
+        <!-- 탭2: 반복 설정 -->
+        <div class="dt-panel" id="dtPanelRepeat" style="display:none;">
+          <label class="evt-form__label" data-i18n="cal_repeat_type">반복 유형</label>
+          <select class="evt-form__input" id="evtRepeatType">
+            <option value="none" data-i18n="cal_repeat_none">반복 없음</option>
+            <option value="daily" data-i18n="cal_repeat_daily">매일</option>
+            <option value="weekly" data-i18n="cal_repeat_weekly">매주</option>
+            <option value="monthly" data-i18n="cal_repeat_monthly">매월</option>
+            <option value="yearly" data-i18n="cal_repeat_yearly">매년</option>
+          </select>
+
+          <div id="repeatOptions" style="display:none;">
+            <label class="evt-form__label" data-i18n="cal_repeat_end">종료일</label>
+            <input type="text" class="evt-form__input" id="evtRepeatEnd" placeholder="YYYY-MM-DD" maxlength="10"
+              autocomplete="off">
           </div>
         </div>
 
         <label class="evt-form__label" data-i18n="memo_label">메모</label>
-        <textarea class="evt-form__textarea" id="evtMemo" rows="3" data-i18n-placeholder="memo_label" placeholder="메모"></textarea>
+        <textarea class="evt-form__textarea" id="evtMemo" rows="3" data-i18n-placeholder="memo_label"
+          placeholder="메모"></textarea>
 
         <label class="evt-form__label" data-i18n="url_label">URL</label>
         <input type="url" class="evt-form__input" id="evtUrl" placeholder="https://...">
@@ -178,7 +224,8 @@
         </div>
       </div>
       <div class="evt-form__footer">
-        <button class="evt-form__btn evt-form__btn--delete" id="evtDeleteBtn" style="display:none;" data-i18n="delete">삭제</button>
+        <button class="evt-form__btn evt-form__btn--delete" id="evtDeleteBtn" style="display:none;"
+          data-i18n="delete">삭제</button>
         <button class="evt-form__btn evt-form__btn--save" id="evtSaveBtn" data-i18n="save">저장</button>
       </div>
     </div>
@@ -195,7 +242,8 @@
         <div class="ical-detail__info" id="icalDetailInfo"></div>
 
         <label class="evt-form__label" data-i18n="memo_label">메모</label>
-        <textarea class="evt-form__textarea" id="icalDetailMemo" rows="3" data-i18n-placeholder="cal_ical_memo_ph" placeholder="메모 추가"></textarea>
+        <textarea class="evt-form__textarea" id="icalDetailMemo" rows="3" data-i18n-placeholder="cal_ical_memo_ph"
+          placeholder="메모 추가"></textarea>
 
         <label class="evt-form__label" data-i18n="url_label">URL</label>
         <input type="url" class="evt-form__input" id="icalDetailUrl" placeholder="https://...">
