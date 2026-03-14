@@ -34,20 +34,23 @@
     <!-- 폼 -->
     <div class="bm-detail__body">
       <label class="bm-detail__label" data-i18n="title_label">제목</label>
-      <input type="text" class="bm-detail__input" id="inputTitle" data-i18n-placeholder="bm_title_ph" placeholder="북마크 이름">
+      <input type="text" class="bm-detail__input" id="inputTitle" data-i18n-placeholder="bm_title_ph"
+        placeholder="북마크 이름">
+
+      <label class="bm-detail__label" data-i18n="tag_label">태그</label>
+      <div class="tag-input-wrap" id="tagInputWrap">
+        <div class="tag-chips" id="tagChips"></div>
+        <input type="text" class="tag-input" id="tagInput" data-i18n-placeholder="tag_placeholder"
+          placeholder="태그 입력 후 , 또는 Enter">
+      </div>
 
       <label class="bm-detail__label" data-i18n="url_label">URL</label>
       <div class="bm-url-list" id="urlList"></div>
       <button type="button" class="bm-url-add" id="btnAddUrl" data-i18n="bm_add_url">+ URL 추가</button>
 
-      <label class="bm-detail__label" data-i18n="tag_label">태그</label>
-      <div class="tag-input-wrap" id="tagInputWrap">
-        <div class="tag-chips" id="tagChips"></div>
-        <input type="text" class="tag-input" id="tagInput" data-i18n-placeholder="tag_placeholder" placeholder="태그 입력 후 , 또는 Enter">
-      </div>
-
       <label class="bm-detail__label" data-i18n="memo_label">메모</label>
-      <textarea class="bm-detail__textarea" id="inputMemo" rows="4" data-i18n-placeholder="memo_label" placeholder="메모"></textarea>
+      <textarea class="bm-detail__textarea" id="inputMemo" rows="4" data-i18n-placeholder="memo_label"
+        placeholder="메모"></textarea>
     </div>
 
     <!-- 푸터 -->

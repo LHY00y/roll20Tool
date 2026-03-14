@@ -474,7 +474,7 @@ input {
 /* 일정 목록 */
 .evt-list {
   list-style: none;
-  height: calc(100vh - 415px);
+  height: calc(100vh - 425px);
   overflow: auto;
 }
 
@@ -716,14 +716,23 @@ input {
   background-color: transparent;
   color: #d93025;
   border: 1px solid #d93025;
-  margin-right: auto;
 }
 
 .evt-form__btn--delete:hover {
   background-color: color-mix(in srgb, #d93025 20%, transparent);
+}
+
+.evt-form__btn--copy {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  margin-right: auto;
 
 }
 
+.evt-form__btn--copy:hover {
+  background-color: color-mix(in srgb, var(--color-primary) 15%, transparent);
+}
 
 /* ════════════ iCal 상세 정보 ════════════ */
 .ical-detail__info {
@@ -764,39 +773,30 @@ input {
 
 
 /* ════════════ 일자/시간 탭 (추가 모드 전용) ════════════ */
-.dt-tabs {
-  display: flex;
-  gap: 2px;
-  margin-top: 4px;
+/* 반복 체크박스 */
+.rp-check {
+  margin-top: 6px;
 }
 
-.dt-tabs__tab {
-  padding: 5px 12px;
-  border: 1px solid color-mix(in srgb, var(--color-text) 18%, transparent);
-  border-bottom: none;
-  border-radius: 6px 6px 0 0;
-  background: none;
-  font-size: 12px;
+.rp-check__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
   font-weight: 500;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: var(--color-text);
   cursor: pointer;
-  transition: all 0.15s;
 }
 
-.dt-tabs__tab:hover {
-  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+.rp-check__label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
 }
 
-.dt-tabs__tab--active {
-  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg));
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-  font-weight: 600;
-}
-
-/* 탭 패널 */
+/* 패널 */
 .dt-panel {
-  border-top: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
   padding-top: 8px;
 }
 
@@ -851,6 +851,118 @@ input {
 .dt-add-row:hover {
   background: var(--color-primary-hover);
 }
+
+/* ════════════ 반복 설정 패널 ════════════ */
+.rp__summary {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 0 10px;
+  color: color-mix(in srgb, var(--color-text) 80%, transparent);
+}
+
+.rp__types {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.rp__type-btn {
+  flex: 1;
+  padding: 7px 0;
+  border: 1px solid color-mix(in srgb, var(--color-text) 20%, transparent);
+  border-radius: 6px;
+  background: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.rp__type-btn:hover {
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+}
+
+.rp__type-btn--active {
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  border-color: var(--color-primary);
+}
+
+/* 매주 요일 선택 */
+.rp__weekdays {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.rp__wd-btn {
+  flex: 1;
+  padding: 6px 0;
+  border: 1px solid color-mix(in srgb, var(--color-text) 20%, transparent);
+  border-radius: 6px;
+  background: none;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.rp__wd-btn:hover {
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+}
+
+.rp__wd-btn--active {
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  border-color: var(--color-primary);
+}
+
+.rp__dates {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.rp__date-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rp__date-row>.evt-form__label {
+  flex: 0 0 38px;
+  margin: 0;
+  font-size: 12px;
+}
+
+.rp__date-row>.dp {
+  flex: 1;
+  min-width: 0;
+}
+
+.rp__date-row>.tp {
+  flex: 0 0 100px;
+}
+
+/* 반복탭 패널: 폼 기준으로 열기 */
+.rp__dates {
+  position: relative;
+}
+
+.rp__date-row .dp__panel {
+  left: 0;
+  min-width: 280px;
+}
+
+.rp__date-row .tp__panel {
+  right: 0;
+  left: auto;
+  min-width: 200px;
+}
+
 
 /* ════════════ 일자 + 시간 같은 줄 ════════════ */
 .evt-form__datetime-row {

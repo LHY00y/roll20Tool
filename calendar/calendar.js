@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const evtUrl = document.getElementById('evtUrl');
   const evtSaveBtn = document.getElementById('evtSaveBtn');
   const evtDeleteBtn = document.getElementById('evtDeleteBtn');
+  const evtCopyBtn = document.getElementById('evtCopyBtn');
   const evtNotify = document.getElementById('evtNotify');
 
   // iCal 상세 폼
@@ -52,17 +53,26 @@ document.addEventListener('DOMContentLoaded', () => {
   let tpPicker = null; // 타임피커 {sync, retarget, openPanel, handleTimeInput, resetTarget}
   let dpPicker = null; // 데이트피커 {sync, retarget, openPanel, handleDateInput, resetTarget}
 
-  // 날짜/시간 탭 (추가 모드 전용)
-  const dtTabs = document.getElementById('dtTabs');
-  const dtTabDatetime = document.getElementById('dtTabDatetime');
-  const dtTabRepeat = document.getElementById('dtTabRepeat');
+  // 일자/시간 & 반복 (추가 모드 전용)
+  const rpCheck     = document.getElementById('rpCheck');
+  const rpCheckbox  = document.getElementById('rpCheckbox');
   const dtPanelDatetime = document.getElementById('dtPanelDatetime');
   const dtPanelRepeat = document.getElementById('dtPanelRepeat');
   const dtExtraRows = document.getElementById('dtExtraRows');
   const dtAddRow = document.getElementById('dtAddRow');
-  const evtRepeatType = document.getElementById('evtRepeatType');
-  const repeatOptions = document.getElementById('repeatOptions');
-  const evtRepeatEnd = document.getElementById('evtRepeatEnd');
+  // 반복 설정 패널
+  const rpSummary   = document.getElementById('rpSummary');
+  const rpTypeBtns  = document.querySelectorAll('.rp__type-btn');
+  const rpStartDate = document.getElementById('rpStartDate');
+  const rpEndDate   = document.getElementById('rpEndDate');
+  const rpTime      = document.getElementById('rpTime');
+  const rpStartDp   = document.getElementById('rpStartDp');
+  const rpEndDp     = document.getElementById('rpEndDp');
+  const rpTp        = document.getElementById('rpTp');
+  const rpWeekdays  = document.getElementById('rpWeekdays');
+  const rpWdBtns    = document.querySelectorAll('.rp__wd-btn');
+  let rpType = 'none'; // none | weekly | monthly | yearly
+  let rpSelectedDays = new Set(); // 매주 선택된 요일 (0=일~6=토)
 
 
   // ══════════════════════════════════
@@ -274,14 +284,118 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ══════════════════════════════════
-  //  탭 전환 + 추가 일자/시간 행 관리
+  //  반복 설정 요약 업데이트
   // ══════════════════════════════════
-  function dtShowTab(tab) {
-    const isDt = tab === 'datetime';
-    dtTabDatetime.classList.toggle('dt-tabs__tab--active', isDt);
-    dtTabRepeat.classList.toggle('dt-tabs__tab--active', !isDt);
-    dtPanelDatetime.style.display = isDt ? '' : 'none';
-    dtPanelRepeat.style.display = isDt ? 'none' : '';
+  function rpUpdateSummary() {
+    if (rpType === 'none') {
+      rpSummary.textContent = I18n.t('cal_repeat_none') || '반복 없음';
+      return;
+    }
+    const weekdayNames = [
+      I18n.t('cal_sun') || '일', I18n.t('cal_mon') || '월',
+      I18n.t('cal_tue') || '화', I18n.t('cal_wed') || '수',
+      I18n.t('cal_thu') || '목', I18n.t('cal_fri') || '금',
+      I18n.t('cal_sat') || '토'
+    ];
+    const labels = {
+      weekly:  I18n.t('cal_repeat_weekly') || '매주',
+      monthly: I18n.t('cal_repeat_monthly') || '매월',
+      yearly:  I18n.t('cal_repeat_yearly') || '매년'
+    };
+    let txt = labels[rpType] + ' ';
+    if (rpType === 'weekly') {
+      if (rpSelectedDays.size > 0) {
+        const sorted = [...rpSelectedDays].sort((a, b) => a - b);
+        txt += sorted.map(d => weekdayNames[d]).join(', ');
+      }
+    } else if (rpType === 'monthly' || rpType === 'yearly') {
+      const m = rpStartDate.value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (m) {
+        const month = parseInt(m[2]), day = parseInt(m[3]);
+        if (rpType === 'monthly') txt += day + '일';
+        else txt += month + '월 ' + day + '일';
+      }
+    }
+    txt += ' 반복';
+    rpSummary.textContent = txt;
+  }
+
+  // 반복 일정의 모든 날짜 생성
+  function rpGenerateDates() {
+    if (rpType === 'none') return [];
+    const start = rpStartDate.value;
+    const end = rpEndDate.value;
+    if (!start || !end) return [];
+
+    const dates = [];
+    const cur = new Date(start + 'T00:00:00');
+    const last = new Date(end + 'T00:00:00');
+    if (cur > last) return [];
+
+    const MAX = 500;
+    const fmt = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+    if (rpType === 'weekly') {
+      if (rpSelectedDays.size === 0) return [];
+      // 매일 순회하며 선택된 요일만 추가
+      while (cur <= last && dates.length < MAX) {
+        if (rpSelectedDays.has(cur.getDay())) dates.push(fmt(cur));
+        cur.setDate(cur.getDate() + 1);
+      }
+    } else {
+      while (cur <= last && dates.length < MAX) {
+        dates.push(fmt(cur));
+        if (rpType === 'monthly') cur.setMonth(cur.getMonth() + 1);
+        else if (rpType === 'yearly') cur.setFullYear(cur.getFullYear() + 1);
+      }
+    }
+    return dates;
+  }
+
+  function rpReset(dateStr) {
+    rpType = 'none';
+    rpTypeBtns.forEach(b => b.classList.remove('rp__type-btn--active'));
+    rpStartDate.value = dateStr || '';
+    rpEndDate.value = '';
+    rpTime.value = '';
+    rpSelectedDays.clear();
+    rpWdBtns.forEach(b => b.classList.remove('rp__wd-btn--active'));
+    rpWeekdays.style.display = 'none';
+    rpUpdateSummary();
+  }
+
+  // ══════════════════════════════════
+  //  반복 체크박스 전환 + 추가 일자/시간 행 관리
+  // ══════════════════════════════════
+  function rpToggle(checked) {
+    dtPanelDatetime.style.display = checked ? 'none' : '';
+    dtPanelRepeat.style.display = checked ? '' : 'none';
+
+    if (checked) {
+      // 시작일 기본값 → evtDate 또는 selectedDate 또는 오늘
+      const dateStr = evtDate.value || selectedDate || (() => {
+        const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+      })();
+      rpStartDate.value = dateStr;
+
+      // 매주 자동 선택
+      rpType = 'weekly';
+      rpTypeBtns.forEach(b => b.classList.toggle('rp__type-btn--active', b.dataset.val === 'weekly'));
+      rpWeekdays.style.display = '';
+
+      // 시작일 요일 자동 선택
+      rpSelectedDays.clear();
+      rpWdBtns.forEach(b => b.classList.remove('rp__wd-btn--active'));
+      if (dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+        const dow = new Date(dateStr).getDay(); // 0=일~6=토
+        rpSelectedDays.add(dow);
+        rpWdBtns.forEach(b => {
+          if (parseInt(b.dataset.day) === dow) b.classList.add('rp__wd-btn--active');
+        });
+      }
+
+      rpUpdateSummary();
+    }
   }
 
   function dtAddExtraRow() {
@@ -387,14 +501,14 @@ document.addEventListener('DOMContentLoaded', () => {
     evtUrl.value = '';
     evtNotify.checked = true;
     evtDeleteBtn.style.display = 'none';
-    // 탭 초기화 및 표시
-    dtTabs.style.display = '';
-    dtShowTab('datetime');
+    evtCopyBtn.style.display = 'none';
+    // 체크박스 초기화 및 표시
+    rpCheck.style.display = '';
+    rpCheckbox.checked = false;
+    rpToggle(false);
     dtClearExtras();
     dtAddRow.style.display = '';
-    evtRepeatType.value = 'none';
-    repeatOptions.style.display = 'none';
-    evtRepeatEnd.value = '';
+    rpReset(dateStr);
     evtFormOverlay.style.display = 'flex';
     evtName.focus();
   }
@@ -414,8 +528,9 @@ document.addEventListener('DOMContentLoaded', () => {
     evtUrl.value = evt.url || '';
     evtNotify.checked = evt.notify !== false;
     evtDeleteBtn.style.display = 'inline-flex';
-    // 수정 모드에서는 탭/추가 버튼 숨김
-    dtTabs.style.display = 'none';
+    evtCopyBtn.style.display = 'inline-flex';
+    // 수정 모드에서는 반복 체크박스/추가 버튼 숨김
+    rpCheck.style.display = 'none';
     dtPanelDatetime.style.display = '';
     dtPanelRepeat.style.display = 'none';
     dtClearExtras();
@@ -449,10 +564,26 @@ document.addEventListener('DOMContentLoaded', () => {
       selectedDate = date;
       render();
       showEventsPanel(date);
+    } else if (rpCheckbox.checked && rpType !== 'none') {
+      // 반복 모드: 시작~종료 사이의 모든 날짜에 이벤트 생성
+      if (!rpStartDate.value) { rpStartDate.focus(); return; }
+      if (!rpEndDate.value)   { rpEndDate.focus(); return; }
+      if (rpType === 'weekly' && rpSelectedDays.size === 0) return;
+      const dates = rpGenerateDates();
+      if (dates.length === 0) { rpStartDate.focus(); return; }
+      const time = rpTime.value;
+      let lastDate = dates[0];
+      dates.forEach(d => {
+        CalendarEvents.add(name, d, time, memo, url, notify);
+        lastDate = d;
+      });
+      closeForm();
+      selectedDate = lastDate;
+      render();
+      showEventsPanel(lastDate);
     } else {
       // 추가 모드: 모든 행의 일자/시간으로 이벤트 생성
       const allDt = dtGetAllDateTimes();
-      // 날짜 유효성 검사
       if (!allDt[0].date) { evtDate.focus(); return; }
       for (let i = 1; i < allDt.length; i++) {
         if (!allDt[i].date) {
@@ -479,6 +610,37 @@ document.addEventListener('DOMContentLoaded', () => {
     closeForm();
     render();
     if (selectedDate) showEventsPanel(selectedDate);
+  }
+
+  function copyEvent() {
+    // 현재 폼 값을 유지한 채 추가 모드로 전환
+    const name = evtName.value;
+    const date = evtDate.value;
+    const time = evtTime.value;
+    const memo = evtMemo.value;
+    const url = evtUrl.value;
+    const notify = evtNotify.checked;
+
+    editingEventId = null;
+    evtFormTitle.textContent = I18n.t('cal_evt_add');
+    evtDeleteBtn.style.display = 'none';
+    evtCopyBtn.style.display = 'none';
+    rpCheck.style.display = '';
+    rpCheckbox.checked = false;
+    rpToggle(false);
+    dtClearExtras();
+    dtAddRow.style.display = '';
+    rpReset(date);
+
+    // 값 복원
+    evtName.value = name;
+    evtDate.value = date;
+    if (dpPicker) dpPicker.sync();
+    evtTime.value = time;
+    if (tpPicker) tpPicker.sync();
+    evtMemo.value = memo;
+    evtUrl.value = url;
+    evtNotify.checked = notify;
   }
 
 
@@ -681,17 +843,61 @@ document.addEventListener('DOMContentLoaded', () => {
   evtFormOverlay.addEventListener('click', (e) => { if (e.target === evtFormOverlay) closeForm(); });
   evtSaveBtn.addEventListener('click', saveEvent);
   evtDeleteBtn.addEventListener('click', deleteEvent);
+  evtCopyBtn.addEventListener('click', copyEvent);
 
   [evtName, evtDate, evtTime, evtUrl].forEach(el => {
     el.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveEvent(); });
   });
 
-  // 탭 전환
-  dtTabDatetime.addEventListener('click', () => dtShowTab('datetime'));
-  dtTabRepeat.addEventListener('click', () => dtShowTab('repeat'));
+  // 반복 체크박스
+  rpCheckbox.addEventListener('change', () => rpToggle(rpCheckbox.checked));
   dtAddRow.addEventListener('click', () => dtAddExtraRow());
-  evtRepeatType.addEventListener('change', () => {
-    repeatOptions.style.display = evtRepeatType.value === 'none' ? 'none' : '';
+
+  // 반복 유형 버튼
+  rpTypeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      rpType = btn.dataset.val;
+      rpTypeBtns.forEach(b => b.classList.toggle('rp__type-btn--active', b === btn));
+      rpWeekdays.style.display = rpType === 'weekly' ? '' : 'none';
+      if (rpType !== 'weekly') { rpSelectedDays.clear(); rpWdBtns.forEach(b => b.classList.remove('rp__wd-btn--active')); }
+      rpUpdateSummary();
+    });
+  });
+
+  // 매주 요일 선택 버튼
+  rpWdBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const day = parseInt(btn.dataset.day);
+      if (rpSelectedDays.has(day)) { rpSelectedDays.delete(day); btn.classList.remove('rp__wd-btn--active'); }
+      else { rpSelectedDays.add(day); btn.classList.add('rp__wd-btn--active'); }
+      rpUpdateSummary();
+    });
+  });
+
+  // 반복 시작/종료일 date picker 바인딩
+  rpStartDate.addEventListener('click', () => { if (dpPicker) { dpPicker.retarget(rpStartDate, rpStartDp); dpPicker.openPanel(); } });
+  rpStartDate.addEventListener('focus', () => { if (dpPicker) { dpPicker.retarget(rpStartDate, rpStartDp); dpPicker.openPanel(); } });
+  rpStartDate.addEventListener('input', () => { if (dpPicker) dpPicker.handleDateInput(rpStartDate); rpUpdateSummary(); });
+  document.getElementById('rpStartToggle').addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    if (dpPicker) { dpPicker.retarget(rpStartDate, rpStartDp); dpPicker.openPanel(); }
+  });
+
+  rpEndDate.addEventListener('click', () => { if (dpPicker) { dpPicker.retarget(rpEndDate, rpEndDp); dpPicker.openPanel(); } });
+  rpEndDate.addEventListener('focus', () => { if (dpPicker) { dpPicker.retarget(rpEndDate, rpEndDp); dpPicker.openPanel(); } });
+  rpEndDate.addEventListener('input', () => { if (dpPicker) dpPicker.handleDateInput(rpEndDate); rpUpdateSummary(); });
+  document.getElementById('rpEndToggle').addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    if (dpPicker) { dpPicker.retarget(rpEndDate, rpEndDp); dpPicker.openPanel(); }
+  });
+
+  // 반복 시간 time picker 바인딩
+  rpTime.addEventListener('click', () => { if (tpPicker) { tpPicker.retarget(rpTime, rpTp); tpPicker.openPanel(); } });
+  rpTime.addEventListener('focus', () => { if (tpPicker) { tpPicker.retarget(rpTime, rpTp); tpPicker.openPanel(); } });
+  rpTime.addEventListener('input', () => { if (tpPicker) tpPicker.handleTimeInput(rpTime); });
+  document.getElementById('rpTimeToggle').addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    if (tpPicker) { tpPicker.retarget(rpTime, rpTp); tpPicker.openPanel(); }
   });
 
   icalDetailClose.addEventListener('click', closeIcalDetail);

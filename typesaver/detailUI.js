@@ -156,12 +156,25 @@ document.addEventListener('DOMContentLoaded', () => {
     return marked.parse(processed);
   }
 
+  // 플레인 미리보기 토글
+  const btnPlainPreview = document.getElementById('btnPlainPreview');
+  btnPlainPreview.addEventListener('click', () => {
+    btnPlainPreview.classList.toggle('active');
+    updatePreview();
+  });
+
   // 미리보기 업데이트
   function updatePreview() {
     const text = getResolvedText();
 
     if (!text) {
       previewBox.innerHTML = `<p style="color:#999">${I18n.t('ts_preview_empty')}</p>`;
+      return;
+    }
+
+    if (btnPlainPreview.classList.contains('active')) {
+      const plain = text.replace(/\[([^\]]+)\]\(#"style="[^)]+\)/g, '$1');
+      previewBox.textContent = plain;
       return;
     }
 
