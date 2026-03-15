@@ -602,7 +602,6 @@ input {
   font-size: 15px;
   font-weight: 600;
   color: inherit;
-  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -724,14 +723,14 @@ input {
 
 .evt-form__btn--copy {
   background-color: transparent;
-  color: var(--color-primary);
-  border: 1px solid var(--color-primary);
+  color: var(--color-text);
+  border: 1px solid var(--color-text);
   margin-right: auto;
 
 }
 
 .evt-form__btn--copy:hover {
-  background-color: color-mix(in srgb, var(--color-primary) 15%, transparent);
+  background-color: color-mix(in srgb, var(--color-text) 15%, transparent);
 }
 
 /* ════════════ iCal 상세 정보 ════════════ */
@@ -776,6 +775,8 @@ input {
 /* 반복 체크박스 */
 .rp-check {
   margin-top: 6px;
+  margin-right: auto;
+  padding-left: 6px;
 }
 
 .rp-check__label {

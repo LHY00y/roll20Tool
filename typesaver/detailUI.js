@@ -147,10 +147,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return text;
   }
 
-  // [text](#"style="css) → <a style="css">text</a> 전처리 후 marked 변환
+  // [text](#" style="css) → <a style="css">text</a> 전처리 후 marked 변환
   function renderMarkdown(text) {
     const processed = text.replace(
-      /\[([^\]]+)\]\(#"style="([^)]+)\)/g,
+      /\[([^\]]+)\]\(#" style="([^)]+)\)/g,
       '<a style="$2">$1</a>'
     );
     return marked.parse(processed);
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (btnPlainPreview.classList.contains('active')) {
-      const plain = text.replace(/\[([^\]]+)\]\(#"style="[^)]+\)/g, '$1');
+      const plain = text.replace(/\[([^\]]+)\]\(#" style="[^)]+\)/g, '$1');
       previewBox.textContent = plain;
       return;
     }

@@ -313,6 +313,7 @@ textarea {
   align-items: center;
   justify-content: center;
   transition: color 0.2s;
+  width: 28px;
 }
 
 .btn-plain:hover,
